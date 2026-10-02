@@ -48,7 +48,7 @@ To use this application, you must first set up the Beeper Desktop application on
 
 Follow these steps or watch the setup guide on YouTube to connect your BlackBerry 10 device to Beeper Desktop running on your local Windows PC.
 
-[![## 📸 Video Tutorial](https://img.youtube.com/vi/W7NVCAgfY6s/0.jpg)](https://www.youtube.com/watch?v=W7NVCAgfY6s)
+[![## 📸 Video Tutorial](https://img.youtube.com/vi/bYO2Vhnvnmg/0.jpg)]([https://www.youtube.com/watch?v=bYO2Vhnvnmg](https://www.youtube.com/watch?v=bYO2Vhnvnmg))
 
 ### 1. Configure Beeper Desktop
 1. Download and install **Beeper Desktop** on your Windows PC.
