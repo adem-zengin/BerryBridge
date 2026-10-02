@@ -154,7 +154,7 @@ Paste the following configuration (replace `YOUR_DOMAIN.duckdns.org` with your a
 ```nginx
 server {
     listen 443 ssl;
-    server_name berrybeeper.duckdns.org;
+    server_name YOUR_DOMAIN.duckdns.org;
 
     client_max_body_size 500M;
 
