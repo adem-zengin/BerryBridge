@@ -58,7 +58,6 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/html/leaflet_js.txt) \
         $$quote($$BASEDIR/assets/html/map.html) \
         $$quote($$BASEDIR/assets/images/bPro.png) \
-        $$quote($$BASEDIR/assets/images/beeper114.png) \
         $$quote($$BASEDIR/assets/images/channel.png) \
         $$quote($$BASEDIR/assets/images/discord.png) \
         $$quote($$BASEDIR/assets/images/doubleTick.png) \
@@ -101,6 +100,7 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/ic_speaker_dk.png) \
         $$quote($$BASEDIR/assets/images/ic_video.png) \
         $$quote($$BASEDIR/assets/images/ic_view_image.png) \
+        $$quote($$BASEDIR/assets/images/icon.png) \
         $$quote($$BASEDIR/assets/images/instagram.png) \
         $$quote($$BASEDIR/assets/images/line.png) \
         $$quote($$BASEDIR/assets/images/linkedin.png) \

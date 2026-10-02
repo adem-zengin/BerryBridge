@@ -19,7 +19,6 @@ html/leaflet.css
 html/leaflet.js.map
 html/leaflet_js.txt
 html/map.html
-images/beeper114.png
 images/bPro.png
 images/channel.png
 images/discord.png
@@ -29,6 +28,7 @@ images/download2.png
 images/facebook.png
 images/googlechat.png
 images/googlemessages.png
+images/icon.png
 images/ic_attach.png
 images/ic_camera.png
 images/ic_cancel.png

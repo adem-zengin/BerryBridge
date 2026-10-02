@@ -21,7 +21,7 @@ Page {
 
                 Container {                  
                     ImageView {
-                        imageSource: "asset:///images/beeper114.png"
+                        imageSource: "asset:///images/icon.png"
                         horizontalAlignment: HorizontalAlignment.Center
                     }
                     Label {
@@ -62,7 +62,7 @@ Page {
                    
                     
                     Label {
-                        text: "<a href='https://github.com/adem-zengin/BerryBeeper'>https://github.com/adem-zengin/BerryBeeper</a>"
+                        text: "<a href='https://github.com/adem-zengin/BerryBridge'>https://github.com/adem-zengin/BerryBridge</a>"
                         textFormat: TextFormat.Html
                         multiline: true
                         topMargin: 0
