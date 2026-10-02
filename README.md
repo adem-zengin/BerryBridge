@@ -1,4 +1,4 @@
-# <img width="114" height="114" alt="beeper114" src="https://github.com/user-attachments/assets/9658bb61-5c5c-4d61-b045-c036e2fdeac1" align="center" /> Berry Bridge
+# <img width="72" height="72" alt="beeper114" src="https://github.com/user-attachments/assets/9658bb61-5c5c-4d61-b045-c036e2fdeac1" align="center" /> Berry Bridge
 
 **Berry Bridge** is a native unofficial Beeper client for rooted BlackBerry 10 devices that synchronizes your messaging accounts via the Beeper Desktop API.
 
