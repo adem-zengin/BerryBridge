@@ -1,3 +1,23 @@
+# BlackBerry / Eclipse / Qt build outputs & temporary files
+arm/
+x86/
+device-Debug/
+device-Release/
+simulator-Debug/
+simulator-Release/
+
+# Otomatik üretilen derleme dosyaları
+*.o
+*.obj
+*.gch
+*.pro.user*
+.qmake.stash
+
+# Eclipse ayarları ve işletim sistemi çöpleri
+.settings/
+.DS_Store
+Thumbs.db
+
 # Prerequisites
 *.d
 
