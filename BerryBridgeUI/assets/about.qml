@@ -23,6 +23,8 @@ Page {
                     ImageView {
                         imageSource: "asset:///images/icon.png"
                         horizontalAlignment: HorizontalAlignment.Center
+                        preferredHeight: ui.sdu(15.0)
+                        preferredWidth: ui.sdu(15.0)
                     }
                     Label {
                         text: "Berry Beeper "+"v"+appInfo.version
@@ -35,6 +37,17 @@ Page {
                         horizontalAlignment: HorizontalAlignment.Center
                         textStyle.color: undefined
                         multiline: true
+                        textStyle.fontWeight: FontWeight.W500
+                    }
+                    Label {
+                        id: whatIsNew
+                        visible: false
+                        text: "Checking for updates"
+                        horizontalAlignment: HorizontalAlignment.Center
+                        textStyle.color: undefined
+                        multiline: true
+                        // HTML biçimlendirmesini aktif et
+                        textFormat: TextFormat.Html
                     }
                     ActivityIndicator {
                         id: versionAct
@@ -118,15 +131,18 @@ Page {
         }
     ]
     
-    function checkUpdate(updateRequired,latestVersion){
+    function checkUpdate(updateRequired,latestVersion, releaseNotes){
         console.log("latestVersion:"+latestVersion);
         versionAct.running=false;
         if (updateRequired){
             updateImg.visible=false;
             latestLabel.text="A newer version is available.";
             latestLabel.textStyle.color= Color.Red;
+            whatIsNew.visible=true;
+            whatIsNew.text=releaseNotes;
         }else{
             updateImg.visible=true;
+            whatIsNew.visible=false
             latestLabel.text="You have the latest version.";
             latestLabel.textStyle.color= undefined;
         }
@@ -143,6 +159,6 @@ Page {
     onCreationCompleted: {
         app.updateCheckCompleted.connect(aboutP.checkUpdate);
         app.updateCheckFailed.connect(aboutP.updateFailed);
-        //app.checkForUpdates();
+        app.checkForUpdates();
     }
 }

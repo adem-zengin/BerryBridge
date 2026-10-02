@@ -96,33 +96,33 @@ void Service::onGlobalSslErrors(QNetworkReply *reply, const QList<QSslError> &er
 
 void Service::handleInvoke(const bb::system::InvokeRequest & request)
 {
-        if (request.action().compare("com.example.BerryBeeperUIService.PAUSE_SYNC") == 0) {
+        if (request.action().compare("com.example.BerryBridgeUIService.PAUSE_SYNC") == 0) {
             qDebug() << "[service.cpp]    → Handling PAUSE_SYNC action";
             pauseSyncing();
         }
-        else if (request.action().compare("com.example.BerryBeeperUIService.DELAY_SYNC") == 0) {
+        else if (request.action().compare("com.example.BerryBridgeUIService.DELAY_SYNC") == 0) {
             qDebug() << "[service.cpp]    → Handling DELAY_SYNC action";
             if (m_syncTimer) {
                 m_syncTimer->start(120000); // 2 dakika ertele
             }
         }
-        else if (request.action().compare("com.example.BerryBeeperUIService.RESUME_SYNC") == 0) {
+        else if (request.action().compare("com.example.BerryBridgeUIService.RESUME_SYNC") == 0) {
             qDebug() << "[service.cpp]    → Handling RESUME_SYNC action";
             resumeSyncing();
-        }else if (request.action().compare("com.example.BerryBeeperUIService.CRED_UPDATE") == 0) {
+        }else if (request.action().compare("com.example.BerryBridgeUIService.CRED_UPDATE") == 0) {
         qDebug() << "[service.cpp]    → Handling CRED_UPDATE action";
         m_settings.sync();
         m_accessToken=m_settings.value("accessToken").toString();
         m_url=m_settings.value("serverUrl").toString();
     }
-    else if (request.action().compare("com.example.BerryBeeperUIService.INIT_UPDATE") == 0) {
+    else if (request.action().compare("com.example.BerryBridgeUIService.INIT_UPDATE") == 0) {
         qDebug() << "[service.cpp]    → Handling INIT_UPDATE action";
         //initDatabases();
         m_settings.sync();
         m_initRun=m_settings.value("initRun").toBool();
         qDebug() << "[service.cpp] m_initRun: "<<m_initRun;
         startPushConnection();
-    }else if (request.action() == "com.example.BerryBeeperUIService.CREATE_NOTIFICATION") {
+    }else if (request.action() == "com.example.BerryBridgeUIService.CREATE_NOTIFICATION") {
 
         QByteArray data = request.data();
         bb::data::JsonDataAccess jda;

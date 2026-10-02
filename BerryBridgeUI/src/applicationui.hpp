@@ -63,7 +63,7 @@ signals:
     // servis veritabanını güncelleyince olması gereken yenileme
     // main.qml burayı dinlemede
     void dbUpdateTriggerChanged();
-    void updateCheckCompleted(bool updateRequired, QString latestVersion);
+    void updateCheckCompleted(bool updateRequired, QString latestVersion, QString releaseNotes);
     void updateCheckFailed(QString errorMessage);
 
 private slots:
@@ -79,6 +79,7 @@ private:
     QSettings m_settings;
     QNetworkAccessManager* m_networkManager;
     bool isVersionGreater(const QString& current, const QString& latest);
+    QString formatMarkdownToHtml(const QString& markdown);
 };
 
 #endif /* ApplicationUI_HPP_ */

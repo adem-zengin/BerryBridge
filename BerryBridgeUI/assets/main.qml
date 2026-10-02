@@ -126,9 +126,10 @@ TabbedPane {
         }
     }
     
-    function checkUpdate(updateRequired,latestVersion){
+    function checkUpdate(updateRequired,latestVersion, releaseNotes){
         console.log("latestVersion:"+latestVersion);
         if (updateRequired){
+            updateDialog.body=updateDialog.body+"\n"+formatToPlainText(releaseNotes);
             updateDialog.show();         
         }
     }
@@ -204,6 +205,52 @@ TabbedPane {
                 tabbedPane.activeTab = tabbedPane.at(0);
             }
         }
+    }
+    
+    // BlackBerry 10 Qt 4.8 / ES5 Uyumlu Plain Text Formatlayıcı
+    function formatToPlainText(input) {
+        if (!input) return "";
+        
+        var text = input;
+        
+        // 1. Satır sonlarını standardize et (\r\n veya \r -> \n)
+        text = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+        
+        // 2. HTML etiketlerini ve yapılarını temizle (Eğer önceden HTML/C++ dönüşümü geldiyse)
+        text = text.replace(/<br\s*\/?>/gi, "\n");
+        text = text.replace(/<a\s+[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi, "$2 ($1)");
+        text = text.replace(/<[^>]+>/g, ""); // Diğer tüm HTML etiketlerini kaldır (<b>, <i> vs)
+        
+        // 3. HTML Entity'lerini çöz
+        text = text.replace(/&bull;/g, "•")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&nbsp;/g, " ");
+        
+        // 4. Markdown Link Yapısı: [Başlık](URL) -> Başlık (URL)
+        text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1 ($2)");
+        
+        // 5. Markdown Kalın / İtalik temizleme: **metin** veya *metin* -> metin
+        text = text.replace(/\*\*(.*?)\*\*/g, "$1");
+        text = text.replace(/\*(.*?)\*/g, "$1");
+        text = text.replace(/__(.*?)__/g, "$1");
+        
+        // 6. Başlıklar: # Başlık -> --- BAŞLIK ---
+        text = text.replace(/^#{1,6}\s*(.*)$/gm, function(match, p1) {
+                return "\n--- " + p1.toUpperCase() + " ---";
+        });
+    
+        // 7. Liste Maddelerini Okunaklı Yap: "- " veya "* " -> "  • "
+        text = text.replace(/^[\s]*[\-\*]\s+/gm, "  • ");
+        
+        // 8. Ardışık gereksiz boş satırları temizle (En fazla 2 satır kalabilir)
+        text = text.replace(/\n{3,}/g, "\n\n");
+        
+        // 9. Başındaki ve sonundaki boşlukları temizle
+        return text.trim();
     }
     
     function refreshTabModels() {

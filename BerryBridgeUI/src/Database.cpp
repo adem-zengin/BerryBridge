@@ -903,8 +903,8 @@ void Database::finishDatabaseSync() {
     m_initRun = true;
 
     bb::system::InvokeRequest request;
-    request.setTarget("com.example.BerryBeeperUIService");
-    request.setAction("com.example.BerryBeeperUIService.INIT_UPDATE");
+    request.setTarget("com.example.BerryBridgeUIService");
+    request.setAction("com.example.BerryBridgeUIService.INIT_UPDATE");
     m_invokeManager->invoke(request);
 
     // 3. UI tarafına her şeyin hazır olduğunu bildir
@@ -2488,8 +2488,8 @@ void Database::saveCredentials(const QString &key, const QString &value) {
     settings.sync();
 
     bb::system::InvokeRequest request;
-    request.setTarget("com.example.BerryBeeperUIService");
-    request.setAction("com.example.BerryBeeperUIService.CRED_UPDATE");
+    request.setTarget("com.example.BerryBridgeUIService");
+    request.setAction("com.example.BerryBridgeUIService.CRED_UPDATE");
     m_invokeManager->invoke(request);
 }
 
@@ -3861,8 +3861,8 @@ void Database::onSyncResponseReceived()
     if (m_syncTimer) {
         m_syncTimer->start(!m_nextCursor.isEmpty() ? 1000 : 60000);
         bb::system::InvokeRequest request;
-        request.setTarget("com.example.BerryBeeperUIService");
-        request.setAction("com.example.BerryBeeperUIService.DELAY_SYNC");
+        request.setTarget("com.example.BerryBridgeUIService");
+        request.setAction("com.example.BerryBridgeUIService.DELAY_SYNC");
         m_invokeManager->invoke(request);
     }
 
@@ -3878,8 +3878,8 @@ void Database::sendNotificationToService(
     const QString &text)
 {
     bb::system::InvokeRequest request;
-    request.setTarget("com.example.BerryBeeperUIService");
-    request.setAction("com.example.BerryBeeperUIService.CREATE_NOTIFICATION");
+    request.setTarget("com.example.BerryBridgeUIService");
+    request.setAction("com.example.BerryBridgeUIService.CREATE_NOTIFICATION");
 
     QVariantMap payload;
     payload["accountID"] = accountID;

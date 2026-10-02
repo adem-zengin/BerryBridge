@@ -117,7 +117,7 @@ void ApplicationUI::onSystemLanguageChanged()
     QCoreApplication::instance()->removeTranslator(m_translator);
     // Initiate, load and install the application translation files.
     QString locale_string = QLocale().name();
-    QString file_name = QString("BerryBeeperUI_%1").arg(locale_string);
+    QString file_name = QString("BerryBridgeUI_%1").arg(locale_string);
     if (m_translator->load(file_name, "app/native/qm")) {
     QCoreApplication::instance()->installTranslator(m_translator);
     }
@@ -268,6 +268,9 @@ void ApplicationUI::onReplyFinished(QNetworkReply* reply) {
         return;
     }
 
+    // YENİ EKLENEN: Sürüm notlarını değişkene al
+    QString rawNotes = resultMap["release_notes"].toString();
+
     // 4. Versiyon Karşılaştırma
     QString latestVersion = tagName.startsWith("v", Qt::CaseInsensitive)
                             ? tagName.mid(1) : tagName;
@@ -276,9 +279,11 @@ void ApplicationUI::onReplyFinished(QNetworkReply* reply) {
     QString currentVersion = appInfo.version();
 
     bool updateRequired = isVersionGreater(currentVersion, latestVersion);
+    // Markdown'ı QML uyumlu HTML'e çevir
+    QString formattedReleaseNotes = formatMarkdownToHtml(rawNotes);
 
-    // İşlem başarılı -> Sinyali tetikle
-    emit updateCheckCompleted(updateRequired, tagName);
+    // Sinyal ile arayüze aktar
+    emit updateCheckCompleted(updateRequired, tagName, formattedReleaseNotes);
 
     reply->deleteLater();
 }
@@ -299,6 +304,53 @@ bool ApplicationUI::isVersionGreater(const QString& current, const QString& late
     }
 
     return false; // Aynı sürüm veya mevcut sürüm daha yüksek
+}
+
+#include <QString>
+#include <QStringList>
+#include <QRegExp>
+
+QString ApplicationUI::formatMarkdownToHtml(const QString& markdown) {
+    QString text = markdown;
+
+    // 1. Windows satır sonlarını (\r\n) Unix formatına (\n) çevir
+    text.replace("\r\n", "\n");
+
+    // 2. Markdown Link Dönüştürme: [Title](URL) -> <a href="URL">Title</a>
+    QRegExp linkRx("\\[([^\\]]+)\\]\\(([^)]+)\\)");
+    text.replace(linkRx, "<a href=\"\\2\">\\1</a>");
+
+    // 3. Kalın Metin Dönüştürme: **text** -> <b>text</b>
+    QRegExp boldRx("\\*\\*(.*?)\\*\\*");
+    boldRx.setMinimal(true); // Açgözlü (greedy) eşleşmeyi önler
+    text.replace(boldRx, "<b>\\1</b>");
+
+    // 4. Satır satır Liste ve Başlık İşleme
+    QStringList lines = text.split("\n");
+    QStringList formattedLines;
+
+    for (int i = 0; i < lines.size(); ++i) {
+        QString line = lines.at(i).trimmed();
+
+        // Liste maddeleri (- veya *) -> Maddeli Simge (&bull;)
+        if (line.startsWith("- ") || line.startsWith("* ")) {
+            line = "&bull; " + line.mid(2);
+        }
+        // Başlıklar (# Header) -> Kalın Başlık
+        else if (line.startsWith("#")) {
+            int hashCount = 0;
+            while (hashCount < line.length() && line.at(hashCount) == '#') {
+                hashCount++;
+            }
+            QString headerText = line.mid(hashCount).trimmed();
+            line = QString("<b>%1</b>").arg(headerText);
+        }
+
+        formattedLines.append(line);
+    }
+
+    // 5. Satırları HTML <br/> ile birleştir
+    return formattedLines.join("<br/>");
 }
 
 void ApplicationUI::clearNewContent(const QString &accountId)

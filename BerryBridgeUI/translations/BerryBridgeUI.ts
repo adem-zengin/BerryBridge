@@ -17,7 +17,7 @@
 <context>
     <name>about</name>
     <message>
-        <location filename="../assets/about.qml" line="105"/>
+        <location filename="../assets/about.qml" line="118"/>
         <source>Report Bugs</source>
         <translation type="unfinished"></translation>
     </message>
