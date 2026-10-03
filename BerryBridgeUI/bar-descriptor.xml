@@ -25,7 +25,7 @@
     <!-- A universally unique application identifier. Must be unique across
         all BlackBerry 10 applications. Using a reverse DNS-style name as the id
         is recommended. (Eg. com.example.ExampleApplication.) Required. -->
-    <id>com.AdemZengin.BerryBeeper</id>
+    <id>com.AdemZengin.BerryBridge</id>
 
     <!-- The name that is displayed in the BlackBerry 10 application installer.
         May have multiple values for each language. See samples or xsd schema file.
@@ -37,7 +37,7 @@
         can also be 1-part or 2-part. It is not necessary to have a 3-part value.
         An updated version of application must have a versionNumber value higher
         than the previous version. Required. -->
-    <versionNumber>1.2.0</versionNumber>
+    <versionNumber>1.2.1</versionNumber>
     <platformVersion>10.2.0</platformVersion>
 
     <!-- Fourth digit segment of the package version. First three segments are
