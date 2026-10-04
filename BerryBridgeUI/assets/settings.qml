@@ -10,6 +10,7 @@ NavigationPane {
         populateSettingsList(list);
         fetchAct.running = false;
         initButton.visible = true;
+        tutorial.visible = false;
     }
     
     function onSyncProgressHandler(message, progress) {
@@ -139,6 +140,14 @@ NavigationPane {
                             syncStatusLabel.visible = true;
                             fetchAct.running=true
                         }
+                    }
+                    
+                    Label {
+                        id: tutorial
+                        text: "<a href=\"https://www.youtube.com/watch?v=bYO2Vhnvnmg\">Video Tutorial</a>"
+                        textStyle.fontWeight: FontWeight.W500
+                        horizontalAlignment: HorizontalAlignment.Center
+                        textFormat: TextFormat.Html
                     }
                     
                     onCreationCompleted: {

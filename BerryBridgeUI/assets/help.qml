@@ -13,12 +13,12 @@ Page {
             topPadding: ui.du(3.0)
             leftPadding: ui.du(3.0)
             rightPadding: ui.du(3.0)
-            Label {
-                text: "Berry Bridge is a native Beeper client that syncs your accounts via the Beeper Desktop API. To use this application, you must first set up the Beeper Desktop Application on a PC or server. For detailed guides and setup instructions, visit the <a href=\"https://github.com/adem-zengin/BerryBridge\">https://github.com/adem-zengin/BerryBridge</a>"
-                multiline: true
-                textStyle.textAlign: TextAlign.Justify
-                textFormat: TextFormat.Html
-            }
+                Label {
+                    text: "Berry Bridge is a native Beeper client that syncs your accounts via the Beeper Desktop API. To use this application, you must first set up the Beeper Desktop Application on a PC or server. For detailed guides and setup instructions, visit the <a href=\"https://github.com/adem-zengin/BerryBridge\">https://github.com/adem-zengin/BerryBridge</a>"
+                    multiline: true
+                    textStyle.textAlign: TextAlign.Justify
+                    textFormat: TextFormat.Html
+                }
             }
         }
     }
