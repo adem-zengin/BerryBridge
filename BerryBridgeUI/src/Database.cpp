@@ -1554,7 +1554,11 @@ QVariantList Database::getMessagesForChat(const QString &accountID, const QStrin
                     if (linkedType == "IMAGE") {
                         //mentionPreview = QString::fromUtf8("📷 Photo");
                         isMentionImg = true;
-                        mentionImgLocalUrl = "/accounts/1000/shared/misc/Beeper/images/" + linkedType + localDtMen.toString("_yyMMdd_") + linkedMessageID +"." +(menMimeType.contains("png") ? "png" : "jpg");
+                        if(isSender){
+                            mentionImgLocalUrl = "/accounts/1000/shared/misc/Beeper/images/" + menFileName;
+                        }else{
+                            mentionImgLocalUrl = "/accounts/1000/shared/misc/Beeper/images/" + linkedType + localDtMen.toString("_yyMMdd_") + linkedMessageID +"." +(menMimeType.contains("png") ? "png" : "jpg");
+                        }
                         if (QFile::exists(mentionImgLocalUrl)) {
                             mentionImgLocalUrl = "file://" + mentionImgLocalUrl;
                         }else{
