@@ -458,7 +458,7 @@ void Database::syncChats(const QString &cursor, QString callbackAction) {
     }
 
     QUrl url(m_url + "/v1/chats");
-    url.addQueryItem("limit", "100");
+    url.addQueryItem("limit", "25");
 
     if (!cursor.isEmpty() && cursor != "null") {
         url.addQueryItem("cursor", cursor);

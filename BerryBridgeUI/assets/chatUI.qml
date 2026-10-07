@@ -444,6 +444,7 @@ Page {
     
     titleBar: TitleBar {
         title: chatPage.chatTitle
+        scrollBehavior: TitleBarScrollBehavior.Sticky
     }
     
     onCreationCompleted: {

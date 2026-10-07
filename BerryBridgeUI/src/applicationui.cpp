@@ -16,6 +16,7 @@
 
 #include "applicationui.hpp"
 #include "Database.hpp"
+#include "ScreenManager.hpp"
 
 #include <bb/cascades/Application>
 #include <bb/cascades/QmlDocument>
@@ -98,6 +99,8 @@ ApplicationUI::ApplicationUI() :
     qml->setContextProperty("app", this);
     Database *dat = new Database(this);
     qml->setContextProperty("dat", dat);
+    ScreenManager *screenManager = new ScreenManager(this);
+    qml->setContextProperty("screenManager", screenManager);
 
     // Create root object for the UI
     AbstractPane *root = qml->createRootObject<AbstractPane>();
@@ -365,3 +368,5 @@ bool ApplicationUI::hasNewContent(const QString &accountId) const
     QSettings settings;
     return settings.value(QString("newContent/%1").arg(accountId), false).toBool();
 }
+
+

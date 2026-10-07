@@ -13,3 +13,4 @@ LIBS += -lQtLocationSubset
 LIBS += -lcurl
 LIBS += -lbbcascadespickers
 QT += gui
+LIBS += -lscreen

@@ -127,14 +127,18 @@ config_pri_source_group1 {
     SOURCES += \
         $$quote($$BASEDIR/src/Database.cpp) \
         $$quote($$BASEDIR/src/LocationSession.cpp) \
+        $$quote($$BASEDIR/src/ScreenManager.cpp) \
         $$quote($$BASEDIR/src/applicationui.cpp) \
         $$quote($$BASEDIR/src/main.cpp)
 
     HEADERS += \
         $$quote($$BASEDIR/src/Database.hpp) \
         $$quote($$BASEDIR/src/LocationSession.hpp) \
+        $$quote($$BASEDIR/src/ScreenManager.hpp) \
         $$quote($$BASEDIR/src/applicationui.hpp)
 }
+
+INCLUDEPATH += $$quote($$BASEDIR/src)
 
 CONFIG += precompile_header
 

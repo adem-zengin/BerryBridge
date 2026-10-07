@@ -177,6 +177,7 @@ Tab {
             titleBar: TitleBar { 
                 id: titleBar
                 kind: TitleBarKind.Default
+                scrollBehavior: TitleBarScrollBehavior.Sticky
             }
             
             actions: [
@@ -331,6 +332,25 @@ Tab {
                             highlightAppearance: HighlightAppearance.Full
                             id: itemRoot
                             
+                            onFocusedChanged: {
+                                if (focused) {
+                                    circle.visible = false;
+                                    lastMessageTime.textStyle.color=Color.White;
+                                    chatName.textStyle.color=Color.White;
+                                    chatPreview.textStyle.color=Color.White;
+                                    mute.filterColor=Color.White;
+                                    pin.filterColor=Color.White;
+                                } else {
+                                    circle.visible = true;
+                                    lastMessageTime.textStyle.color=(ListItemData.unreadCount > 0) ? Color.create(itemRoot.ListItem.view.rootTab.unreadBadgeColor) : Color.Gray
+                                    chatName.textStyle.color=undefined;
+                                    chatPreview.textStyle.color=undefined;
+                                    mute.filterColor=Color.Gray;
+                                    pin.filterColor=Color.Gray;
+
+                                }
+                            }
+                            
                             contextActions: [
                                 ActionSet {
                                     title: ListItemData.displayUpper
@@ -414,6 +434,7 @@ Tab {
                                 layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
                                 leftPadding: ui.sdu(2.0); rightPadding: ui.sdu(2.0); topPadding: ui.sdu(3.0); bottomPadding: ui.sdu(3.0)
                                 
+                                
                                 Container {
                                     preferredWidth: ui.sdu(12.0)
                                     preferredHeight: ui.sdu(12.0)
@@ -446,10 +467,11 @@ Tab {
                                         preferredHeight: ui.sdu(8.0)
                                     }
                                     ImageView {
-                                        id:circle
+                                        id: circle
                                         imageSource: "asset:///images/wPro.png"
                                         horizontalAlignment: HorizontalAlignment.Fill
                                         verticalAlignment: VerticalAlignment.Fill
+                                        
                                     }
                                 }
                                 
@@ -464,6 +486,7 @@ Tab {
                                         layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
                                         
                                         Label {
+                                            id: chatName
                                             layoutProperties: StackLayoutProperties { spaceQuota: 1.0 }
                                             text: ListItemData.displayUpper
                                             textStyle.fontWeight: (ListItemData.unreadCount > 0) ? FontWeight.W500 : FontWeight.Normal
@@ -471,6 +494,7 @@ Tab {
                                             topMargin: 0; bottomMargin: 0
                                         }
                                         Label {
+                                            id: lastMessageTime
                                             text: ListItemData.lastMessageTime
                                             textStyle.fontSize: FontSize.XSmall
                                             textStyle.color: (ListItemData.unreadCount > 0) ? Color.create(itemRoot.ListItem.view.rootTab.unreadBadgeColor) : Color.Gray
@@ -484,6 +508,7 @@ Tab {
                                         layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
                                         
                                         Label {
+                                            id: chatPreview
                                             layoutProperties: StackLayoutProperties { spaceQuota: 1.0 }
                                             text: ListItemData.displayLower
                                             textStyle.fontSize: FontSize.Small
@@ -493,6 +518,7 @@ Tab {
                                         }
                                         
                                         ImageView {
+                                            id: mute
                                             visible: (ListItemData.isMuted) 
                                             imageSource: "asset:///images/mute.png" 
                                             preferredWidth: ui.sdu(4.5)
@@ -503,6 +529,7 @@ Tab {
                                         }
                                         
                                         ImageView {
+                                            id: pin
                                             visible: (ListItemData.isPinned) 
                                             imageSource: "asset:///images/pin.png" 
                                             preferredWidth: ui.sdu(4.5)

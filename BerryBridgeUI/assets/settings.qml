@@ -61,6 +61,8 @@ NavigationPane {
             populateSettingsList(list);
         }
         
+        screenManager.setKeepAwake(true);
+        
         datSet.settingsReady.connect(onSettingsReadyHandler);
         datSet.syncProgress.connect(onSyncProgressHandler);
         datSet.syncComplete.connect(onSyncCompleteHandler);
@@ -74,10 +76,12 @@ NavigationPane {
         
         titleBar: TitleBar {
             title: "Settings"
+            scrollBehavior: TitleBarScrollBehavior.Sticky
             dismissAction: ActionItem {
                 title: "Back"
                 onTriggered: {
-                    setupSheet.close()
+                    screenManager.setKeepAwake(false);
+                    setupSheet.close()      
                 }
             }
             acceptAction: ActionItem {
@@ -441,6 +445,7 @@ NavigationPane {
                           syncProgressIndicator.value = 0; // Sıfırla
                           initButton.enabled = false; // Tıklanabilirliği kapat, butonu tamamen yok etme ki süreç izlensin
                           datSet.initializeDatabaseSync();
+                          screenManager.setKeepAwake(true);
                       }
                       topMargin: ui.sdu(5.0)
                     }
@@ -454,6 +459,7 @@ NavigationPane {
                           console.log("[QML] Closing settings sheet");
                           setupSheet.close();
                           datSet.setInitRun(true);
+                          screenManager.setKeepAwake(false);
                       }
                       topMargin: ui.sdu(5.0)
                     }
