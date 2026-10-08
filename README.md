@@ -214,5 +214,8 @@ sudo systemctl restart nginx
 3. Paste your generated **Access Token**.
 4. Tap **List Accounts** and enjoy global access!
 
-## Support
+## 💖 Support
+
+If you find this project useful, you can support its development on Patreon:
+
 [Patreon](https://www.patreon.com/16129770/join)
