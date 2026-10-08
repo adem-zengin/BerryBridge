@@ -5,9 +5,11 @@ device {
     CONFIG(debug, debug|release) {
         profile {
             CONFIG += \
+                config_pri_assets \
                 config_pri_source_group1
         } else {
             CONFIG += \
+                config_pri_assets \
                 config_pri_source_group1
         }
 
@@ -16,6 +18,7 @@ device {
     CONFIG(release, debug|release) {
         !profile {
             CONFIG += \
+                config_pri_assets \
                 config_pri_source_group1
         }
     }
@@ -25,6 +28,7 @@ simulator {
     CONFIG(debug, debug|release) {
         !profile {
             CONFIG += \
+                config_pri_assets \
                 config_pri_source_group1
         }
     }
@@ -38,8 +42,6 @@ config_pri_source_group1 {
     HEADERS += $$quote($$BASEDIR/src/service.hpp)
 }
 
-INCLUDEPATH += $$quote($$BASEDIR/src)
-
 CONFIG += precompile_header
 
 PRECOMPILED_HEADER = $$quote($$BASEDIR/precompiled.h)
@@ -50,7 +52,10 @@ lupdate_inclusion {
         $$quote($$BASEDIR/../src/*.c++) \
         $$quote($$BASEDIR/../src/*.cc) \
         $$quote($$BASEDIR/../src/*.cpp) \
-        $$quote($$BASEDIR/../src/*.cxx)
+        $$quote($$BASEDIR/../src/*.cxx) \
+        $$quote($$BASEDIR/../assets/*.qml) \
+        $$quote($$BASEDIR/../assets/*.js) \
+        $$quote($$BASEDIR/../assets/*.qs)
 
     HEADERS += \
         $$quote($$BASEDIR/../src/*.h) \
