@@ -3,25 +3,29 @@ import bb.system 1.2
 
 TabbedPane {
     property variant activeUploads: ({})
-    property variant navPane;
+    property variant navPane
+    property variant settingsPageV
     id: tabbedPane
     showTabsOnActionBar: false
     
     onActiveTabChanged: {
-        navPane = activeTab.content;
-        activeTab.newContentAvailable = false;
-        app.clearNewContent(activeTab.accountID);
-        // Renk doğrudan GenericTab içerisinden dinamik olarak gelir
-        if (activeTab && activeTab.primaryColor) {
-            app.setActionBarColor(activeTab.primaryColor);
-        } else {
-            app.setActionBarColor("#444444"); // Fallback
-        }
-        
-        // SON AÇILAN SEKKEYİ QSETTINGS'E KAYDET
-        if (activeTab && activeTab.accountID && dat && typeof dat.updateSetting === "function") {
-            app.updateSetting("last_active_tab", activeTab.accountID);
-            console.log("[MAIN-QML] Saved last active tab: " + activeTab.accountID);
+        if (activeTab) {
+            navPane = activeTab.content;
+            activeTab.newContentAvailable = false;
+            app.clearNewContent(activeTab.accountID);
+            
+            // Renk doğrudan GenericTab içerisinden dinamik olarak gelir
+            if (activeTab.primaryColor) {
+                app.setActionBarColor(activeTab.primaryColor);
+            } else {
+                app.setActionBarColor("#444444"); // Fallback
+            }
+            
+            // SON AÇILAN SEKKEYİ QSETTINGS'E KAYDET
+            if (activeTab.accountID && dat && typeof dat.updateSetting === "function") {
+                app.updateSetting("last_active_tab", activeTab.accountID);
+                console.log("[MAIN-QML] Saved last active tab: " + activeTab.accountID);
+            }
         }
     }
     
@@ -83,7 +87,18 @@ TabbedPane {
                 imageSource: "asset:///images/ic_settings.png"
                 
                 onTriggered: {
-                    var s = settingsPageDefinition.createObject();               
+                    settingsPageV = settingsPage.createObject(navPane);
+                    settingsPageV.mainRef = tabbedPane;
+                    navPane.push(settingsPageV);
+                }
+            }
+            ,ActionItem {
+                id: menuLogin
+                title: "Accounts"
+                imageSource: "asset:///images/ic_bbm.png"
+                
+                onTriggered: {
+                    var s = loginPageDefinition.createObject();               
                     setupSheet.setContent(s);
                     setupSheet.open();
                 }
@@ -108,21 +123,44 @@ TabbedPane {
                 refreshTabModels();
         });
     
+        app.openChatRequested.connect(function(accountId, chatId) {
+                //setToast.body = "Invoke!";
+                //setToast.show();                
+                updateAccountTabs(accountId, chatId);               
+        });
+
         dat.dataRefreshRequested.connect(function() {
-                console.log("refresh request received from Database.cpp")
+                console.log("refresh request received from Database.cpp");
                 refreshTabModels();
         });
-    
+        
         dat.messageSentSuccessfully.connect(tabbedPane.removeActiveUpload);
         app.updateCheckCompleted.connect(tabbedPane.checkUpdate);
         app.checkForUpdates();
         
         if (!dat.initRun) {
-            var s = settingsPageDefinition.createObject();
+            var s = loginPageDefinition.createObject();
             setupSheet.setContent(s);
             setupSheet.open();
         } else {
-            updateAccountTabs();
+            // --- KRİTİK DÜZELTME: Cold Start kontrolü ---
+            var pendingAcc = app.pendingAccountId();
+            var pendingChat = app.pendingChatId();
+            
+            if (pendingAcc !== "") {
+                console.log("[MAIN-QML] Cold start via notification detected for account: " + pendingAcc);
+                updateAccountTabs(pendingAcc);
+                
+                if (pendingChat !== "") {
+                    openChatPage(pendingAcc, pendingChat);
+                }
+                
+                // İşlenen isteği temizle ki normal açılışlarda tekrar tetiklenmesin
+                app.clearPendingInvoke();
+            } else {
+                // Normal açılış (Son kapatılan tab açılır)
+                updateAccountTabs();
+            }
         }
     }
     
@@ -134,8 +172,8 @@ TabbedPane {
         }
     }
     
-    function updateAccountTabs() {
-        console.log("[MAIN-QML] updateAccountTabs called");
+    function updateAccountTabs(invokedAccountId, targetChatId) {
+        console.log("[MAIN-QML] updateAccountTabs called with target account: " + invokedAccountId + ", chat: " + targetChatId);
         var accountsRaw = dat.getSelectedAccountsForMain();
         if (!accountsRaw) {
             console.log("[MAIN-QML] No accounts returned from database.");
@@ -143,7 +181,6 @@ TabbedPane {
         }
         
         var accounts = accountsRaw;
-        
         var count = tabbedPane.count();
         for (var k = count - 1; k >= 0; k--) {
             var t = tabbedPane.at(k);
@@ -151,15 +188,17 @@ TabbedPane {
             t.destroy();
         }
         
-        // --- YENİ: Kaydedilen son aktif sekme ID'sini al ---
         var targetTabToSelect = null;
-        var lastSavedAccountID = (dat && typeof dat.getSetting === "function") ? app.getSetting("last_active_tab", "") : "";
-        console.log("[MAIN-QML] Last saved tab from settings: " + lastSavedAccountID);
+        var targetAccountID = "";
+        
+        if (invokedAccountId !== undefined && invokedAccountId !== null && invokedAccountId !== "") {
+            targetAccountID = invokedAccountId;
+        } else {
+            targetAccountID = (dat && typeof dat.getSetting === "function") ? app.getSetting("last_active_tab", "") : "";
+        }
         
         for (var i = 0; i < accounts.length; i++) {
             var account = accounts[i];
-            
-            // Artık tek tip tab kullanıyoruz
             var newTab = genericTabDelegate.createObject();
             
             if (newTab) {
@@ -169,7 +208,6 @@ TabbedPane {
                 newTab.accountID = account.accountID;
                 newTab.mainRef = tabbedPane;
                 newTab.newContentAvailable = app.hasNewContent(account.accountID);
-                // Not: Kodundaki mükerrer newTab.accountID ataması temizlendi
                 
                 if (typeof newTab.getModel === "function") {
                     var model = newTab.getModel();
@@ -190,19 +228,25 @@ TabbedPane {
                 
                 tabbedPane.add(newTab);
                 
-                // --- YENİ: Bu sekme kaydedilen son sekme mi kontrol et ---
-                if (lastSavedAccountID !== "" && account.accountID === lastSavedAccountID) {
+                if (targetAccountID !== "" && account.accountID === targetAccountID) {
                     targetTabToSelect = newTab;
                 }
             }
         }
         
-        // --- YENİ: Hedef sekme varsa onu seç, yoksa ilk sekmeye dön ---
         if (tabbedPane.count() > 0) {
             if (targetTabToSelect) {
                 tabbedPane.activeTab = targetTabToSelect;
             } else {
                 tabbedPane.activeTab = tabbedPane.at(0);
+            }
+        }
+        
+        // --- YENİ: Sekmeler tamamen oluşturulup aktif edildikten sonra işi sekme delegesine devrediyoruz ---
+        if (targetChatId !== undefined && targetChatId !== null && targetChatId !== "") {
+            var activeTab = tabbedPane.activeTab;
+            if (activeTab && typeof activeTab.openChatByChatId === "function") {
+                activeTab.openChatByChatId(targetChatId);
             }
         }
     }
@@ -318,7 +362,11 @@ TabbedPane {
     
     attachedObjects: [
         ComponentDefinition {
-            id: settingsPageDefinition
+            id: loginPageDefinition
+            source: "login.qml"
+        },
+        ComponentDefinition {
+            id: settingsPage
             source: "settings.qml"
         },
         ComponentDefinition {
@@ -343,6 +391,9 @@ TabbedPane {
             body: "A newer version is available!"
             confirmButton.label: "OK"
             cancelButton.label: ""            
+        },SystemToast {
+            id: setToast
+            body: ""
         }
     ]
 }

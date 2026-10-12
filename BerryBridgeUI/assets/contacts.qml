@@ -11,6 +11,7 @@ Page {
     property string primaryColor: "#444444"
     property string chatBgColor: "#E5DDD5"
     property string bubbleColor: "#d8fdd2"
+    property bool darkTheme
     
     function onChatCreatedSuccessHandler(responseJson) {
         console.log("Sohbet başarıyla oluşturuldu: " + responseJson);
@@ -66,6 +67,7 @@ Page {
     
     titleBar: TitleBar {
         title: "Contacts & Groups"
+        scrollBehavior: TitleBarScrollBehavior.Sticky
         dismissAction: ActionItem {
             title: "Cancel"
             onTriggered: { navigationPane.pop(); }
@@ -86,6 +88,7 @@ Page {
         
         ListView {
             id: contactsList
+            property variant rootPage: contactsPage  
             dataModel: contactModel
             topMargin: 20.0
             onTriggered: {
@@ -164,6 +167,7 @@ Page {
                 ListItemComponent {
                     type: "item" 
                     StandardListItem {
+                        id: itemRoot
                         title: ListItemData.displayName
                         description: {
                             // 1. Önce gelen verinin bir grup olup olmadığını kontrol ediyoruz
@@ -180,7 +184,8 @@ Page {
                             }
                             return desc;
                         }
-                        imageSource: ListItemData.type === "group" ? "asset:///images/ic_group.png" : "asset:///images/ic_contact.png"
+                        
+                        imageSource: ListItemData.type === "group" ? itemRoot.ListItem.view.rootPage.darkTheme? "asset:///images/ic_group.png" : "asset:///images/ic_group_dark.png" : itemRoot.ListItem.view.rootPage.darkTheme? "asset:///images/ic_contact.png" : "asset:///images/ic_contact_dark.png"
                     }
                 },
                 ListItemComponent {
@@ -315,5 +320,6 @@ Page {
     onCreationCompleted: {
         dat.chatCreatedSuccess.connect(onChatCreatedSuccessHandler);
         dat.chatCreatedError.connect(onChatCreatedErrorHandler);
+        darkTheme = app.darkMode;
     }
 }

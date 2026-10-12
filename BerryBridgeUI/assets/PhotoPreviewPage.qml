@@ -12,6 +12,7 @@ Page {
     
     titleBar: TitleBar {
         title: "Preview"
+        scrollBehavior: TitleBarScrollBehavior.Sticky
         
         // Sol taraftaki Back butonu
         dismissAction: ActionItem {

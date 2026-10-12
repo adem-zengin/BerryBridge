@@ -134,6 +134,12 @@
     <invoke-target id="com.example.BerryBridgeUI">
         <invoke-target-type>application</invoke-target-type>
         <invoke-target-name>BerryBridgeUI</invoke-target-name>
+
+        <filter>
+	        <action>bb.action.START</action>
+	        <mime-type>x-application/berrybridge-chat</mime-type>
+	        <property var="uris" value="berrybridge://chat" />
+    	</filter>
         <icon>
             <image>icon.png</image>
         </icon>

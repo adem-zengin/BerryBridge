@@ -5,7 +5,8 @@ Page {
     id: aboutP
     actionBarVisibility: ChromeVisibility.Visible
     titleBar: TitleBar {
-        title: "About"       
+        title: "About"
+        scrollBehavior: TitleBarScrollBehavior.Sticky      
     }
     
     Container {

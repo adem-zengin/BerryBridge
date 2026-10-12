@@ -67,10 +67,13 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/googlechat.png) \
         $$quote($$BASEDIR/assets/images/googlemessages.png) \
         $$quote($$BASEDIR/assets/images/ic_attach.png) \
+        $$quote($$BASEDIR/assets/images/ic_attach_dark.png) \
+        $$quote($$BASEDIR/assets/images/ic_bbm.png) \
         $$quote($$BASEDIR/assets/images/ic_camera.png) \
         $$quote($$BASEDIR/assets/images/ic_cancel.png) \
         $$quote($$BASEDIR/assets/images/ic_compose.png) \
         $$quote($$BASEDIR/assets/images/ic_contact.png) \
+        $$quote($$BASEDIR/assets/images/ic_contact_dark.png) \
         $$quote($$BASEDIR/assets/images/ic_copy.png) \
         $$quote($$BASEDIR/assets/images/ic_delete.png) \
         $$quote($$BASEDIR/assets/images/ic_doctype_doc.png) \
@@ -84,9 +87,11 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/ic_forward.png) \
         $$quote($$BASEDIR/assets/images/ic_gallery.png) \
         $$quote($$BASEDIR/assets/images/ic_group.png) \
+        $$quote($$BASEDIR/assets/images/ic_group_dark.png) \
         $$quote($$BASEDIR/assets/images/ic_group_white.png) \
         $$quote($$BASEDIR/assets/images/ic_info.png) \
         $$quote($$BASEDIR/assets/images/ic_keyboard.png) \
+        $$quote($$BASEDIR/assets/images/ic_keyboard_dark.png) \
         $$quote($$BASEDIR/assets/images/ic_location.png) \
         $$quote($$BASEDIR/assets/images/ic_microphone.png) \
         $$quote($$BASEDIR/assets/images/ic_play.png) \
@@ -95,6 +100,7 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/ic_search.png) \
         $$quote($$BASEDIR/assets/images/ic_send.png) \
         $$quote($$BASEDIR/assets/images/ic_send.svg) \
+        $$quote($$BASEDIR/assets/images/ic_send_dark.png) \
         $$quote($$BASEDIR/assets/images/ic_settings.png) \
         $$quote($$BASEDIR/assets/images/ic_share.png) \
         $$quote($$BASEDIR/assets/images/ic_speaker_dk.png) \
@@ -118,6 +124,7 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/wPro.png) \
         $$quote($$BASEDIR/assets/images/whatsapp.png) \
         $$quote($$BASEDIR/assets/images/x.png) \
+        $$quote($$BASEDIR/assets/login.qml) \
         $$quote($$BASEDIR/assets/main.qml) \
         $$quote($$BASEDIR/assets/search.qml) \
         $$quote($$BASEDIR/assets/settings.qml)

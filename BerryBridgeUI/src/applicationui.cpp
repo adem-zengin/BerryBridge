@@ -82,11 +82,18 @@ ApplicationUI::ApplicationUI() :
        qWarning() << "Failed to connect file watcher";
     }
 
+    m_disableTrackpadFocus = m_settings.value("settings/disableTrackpadFocus", true).toBool();
+    m_darkMode = m_settings.value("settings/darkMode", false).toBool();
+
     m_networkManager = new QNetworkAccessManager(this);
 
     // Slot imzasına (QNetworkReply*) eklendi
     connect(m_networkManager, SIGNAL(finished(QNetworkReply*)),
             this, SLOT(onReplyFinished(QNetworkReply*)));
+
+    m_invokeManager = new bb::system::InvokeManager(this);
+    connect(m_invokeManager, SIGNAL(invoked(const bb::system::InvokeRequest&)),
+            this, SLOT(onInvoked(const bb::system::InvokeRequest&)));
 
     // initial load
     onSystemLanguageChanged();
@@ -113,6 +120,32 @@ ApplicationUI::ApplicationUI() :
     Notification::deleteAllFromInbox();
     // Sadece yıldız gitsin ama Hub'da mesajlar kalsın istiyorsan:
     //Notification::clearEffectsForAll();
+}
+
+void ApplicationUI::onInvoked(const bb::system::InvokeRequest &request)
+{
+    qDebug() << "=== INCOMING INVOKE DEBUG ===";
+    qDebug() << "Action:" << request.action();
+    qDebug() << "URI:" << request.uri().toString();
+
+    if (request.action() == "bb.action.START") {
+        QUrl uri = request.uri();
+        QString accountId = uri.queryItemValue("account");
+        QString chatId = uri.queryItemValue("chat");
+
+        if (!accountId.isEmpty()) {
+            qDebug() << "[INVOKE] Başarıyla çözüldü -> Hesap:" << accountId << "Sohbet:" << chatId;
+            m_pendingAccountId = accountId;
+            m_pendingChatId = chatId;
+            emit openChatRequested(accountId, chatId);
+        }
+    }
+}
+
+void ApplicationUI::clearPendingInvoke()
+{
+    m_pendingAccountId = "";
+    m_pendingChatId = "";
 }
 
 void ApplicationUI::onSystemLanguageChanged()
@@ -367,6 +400,49 @@ bool ApplicationUI::hasNewContent(const QString &accountId) const
 {
     QSettings settings;
     return settings.value(QString("newContent/%1").arg(accountId), false).toBool();
+}
+
+bool ApplicationUI::disableTrackpadFocus() const
+{
+    return m_disableTrackpadFocus;
+}
+
+void ApplicationUI::setDisableTrackpadFocus(bool disable)
+{
+    if (m_disableTrackpadFocus != disable) {
+        m_disableTrackpadFocus = disable;
+        m_settings.setValue("settings/disableTrackpadFocus", disable);
+        m_settings.sync(); // Değişiklikleri diske anında yaz
+        emit disableTrackpadFocusChanged(disable);
+    }
+}
+
+bool ApplicationUI::darkMode() const
+{
+    return m_darkMode;
+}
+
+void ApplicationUI::setDarkMode(bool dark)
+{
+    if (m_darkMode != dark) {
+        m_darkMode = dark;
+        m_settings.setValue("settings/darkMode", dark);
+        m_settings.sync();
+        emit darkModeChanged(dark);
+    }
+}
+
+void ApplicationUI::exitApp()
+{
+    bb::cascades::Application::quit();
+}
+
+bool ApplicationUI::isClassic() const
+{
+    bb::device::HardwareInfo info;
+    QString model = info.modelName();
+    // BlackBerry Classic (Q20) model adı kontrolü
+    return model.contains("Classic", Qt::CaseInsensitive) || model.contains("Q20", Qt::CaseInsensitive);
 }
 
 

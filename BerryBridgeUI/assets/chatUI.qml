@@ -41,9 +41,10 @@ Page {
     
     // --- TEMA DEĞİŞKENLERİ ---
     property string primaryColor: "#444444"
-    property string chatBgColor: "#E5DDD5"
+    property string chatBgColor: "#f0f0f0"
     property string bubbleColor: "#d8fdd2"
     property variant datObject :dat
+    property variant appObject :app
     property alias chatPage:chatPage
     property alias eCont: editCont
     property alias eLabel: editLabel
@@ -51,6 +52,8 @@ Page {
     property bool isEditing: false
     property string editMsgID:""
     property alias atButton: attachButton
+    
+    property bool isDark
     
     resizeBehavior: PageResizeBehavior.Resize
     
@@ -421,6 +424,15 @@ Page {
                 break;
             }
         }
+        
+        for (var i = 0; i < messageModel.size(); i++) {
+            var item = messageModel.value(i);
+            if (item.linkedMessageID === messageId) {
+                // Update item with localImagePath
+                item.mentionImgLocalUrl = localPath;
+                messageModel.replace(i, item);
+            }
+        }
     }
     
     function handleDownloadProgress(messageId, progress) {
@@ -441,13 +453,30 @@ Page {
         dat.imageDownloaded.disconnect(chatPage.handleImageDownloaded);
         dat.downloadProgress.disconnect(chatPage.handleDownloadProgress);
     }
-    
+  
     titleBar: TitleBar {
-        title: chatPage.chatTitle
+        kind: TitleBarKind.FreeForm
         scrollBehavior: TitleBarScrollBehavior.Sticky
-    }
+        kindProperties: FreeFormTitleBarKindProperties {
+            Container {
+                layout: DockLayout {}
+                leftPadding: ui.du(2.0)
+                rightPadding: ui.du(2.0)
+                
+                Label {
+                text: chatPage.chatTitle
+                verticalAlignment: VerticalAlignment.Center
+                horizontalAlignment: HorizontalAlignment.Left
+                textStyle.fontWeight: FontWeight.W500
+                textStyle.fontSize: FontSize.Large
+                }
+        
+            }
+        }
+        }
     
     onCreationCompleted: {
+        isDark = app.darkMode;
         app.dbUpdateTriggerChanged.connect(chatPage.handleDbUpdate);
         dat.imageDownloaded.connect(chatPage.handleImageDownloaded);
         dat.downloadProgress.connect(chatPage.handleDownloadProgress);
@@ -474,7 +503,7 @@ Page {
         layout: DockLayout {}
         horizontalAlignment: HorizontalAlignment.Fill
         verticalAlignment: VerticalAlignment.Fill
-        background: Color.create(chatPage.chatBgColor)
+        background: isDark ? undefined: Color.create(chatPage.chatBgColor)
         
         /*ImageView {
          imageSource: "asset:///images/ChatBack.jpg"
@@ -571,6 +600,9 @@ Page {
                         type: "header"
                         // Ana konteyner ekranın tamamına yayılır
                         Container {
+                            id: headerCont
+                            property variant listView: ListItem.view
+                            navigation.focusPolicy: NavigationFocusPolicy.NotFocusable
                             horizontalAlignment: HorizontalAlignment.Fill
                             topPadding: ui.du(2.5)
                             bottomPadding: ui.du(2.5)
@@ -589,7 +621,7 @@ Page {
                             
                             // 2. ORTA İÇERİK: Asıl tarih balonumuz
                             Container {
-                                background: Color.create("#f5f5f5")
+                                background: headerCont.listView.rootPage.isDark ? Color.create("#282828"): Color.create("#f5f5f5")
                                 leftPadding: ui.du(2.5)
                                 rightPadding: ui.du(2.5)
                                 topPadding: ui.du(0.8)
@@ -599,7 +631,7 @@ Page {
                                     text: ListItemData.headerText
                                     textStyle.fontSize: FontSize.XSmall
                                     textStyle.fontWeight: FontWeight.W500
-                                    textStyle.color: Color.create("#444444")
+                                    textStyle.color: headerCont.listView.rootPage.isDark ? undefined: Color.create("#444444")
                                     // Metin çok uzunsa kendi içinde de ortalansın
                                     horizontalAlignment: HorizontalAlignment.Center
                                 }
@@ -615,10 +647,10 @@ Page {
                     },
                     
                     ListItemComponent {
-                        type: "message"
-                        
+                        type: "message"                        
                         Container {
                             id: rootMessageItem
+                            navigation.focusPolicy: rootMessageItem.listView.rootPage.appObject.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
                             // En dış seviyede ListView referansını sabitliyoruz
                             property variant listView: ListItem.view
                             property string chatType: listView ? listView.chatType : ""
@@ -646,7 +678,7 @@ Page {
                                             onClicked: {
                                                 rootMessageItem.listView.rootPage.loadMoreMessages();
                                             }
-                                            color: Color.create("#ff282828")
+                                            color: Color.create("#282828")
                                         }
                                         
                                         // Sağ tarafı dolduran esnek boşluk
@@ -660,8 +692,10 @@ Page {
                             // Normal Mesaj Görünümü
                             Container {
                                 visible: !ListItemData.isLoadMore
+                                navigation.focusPolicy: rootMessageItem.listView.rootPage.appObject.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
                                 Container {
                                     id: msgContainer
+                                    navigation.focusPolicy: rootMessageItem.listView.rootPage.appObject.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
                                     property string chatType: rootMessageItem.listView.chatType
                                     contextActions: [
                                         ActionSet {
@@ -840,7 +874,7 @@ Page {
                                     }
                                     
                                     Container {
-                                        background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.bubbleColor) : Color.White
+                                        background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.bubbleColor) : rootMessageItem.listView.rootPage.isDark? Color.create("#282828"):Color.White
                                         leftPadding: ui.du(1.5); rightPadding: ui.du(1.5); topPadding: ui.du(1.0); bottomPadding: ui.du(1.0)
                                         layout: StackLayout {
                                         }
@@ -859,7 +893,7 @@ Page {
                                         Container {
                                             id: mentionCont
                                             visible: ListItemData.hasMention                                   
-                                            background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.darkenColor(rootMessageItem.listView.rootPage.bubbleColor,15)): Color.create("#f6f5f3")
+                                            background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.darkenColor(rootMessageItem.listView.rootPage.bubbleColor,15)): rootMessageItem.listView.rootPage.isDark?Color.create("#202020"):Color.create("#f6f5f3")
                                             bottomMargin: ui.du(1.0)
                                             layout: StackLayout { orientation: LayoutOrientation.LeftToRight}
                                             Container {
@@ -883,7 +917,6 @@ Page {
                                                     id: mentionSender
                                                     // C++'tan gelen veriyi doğrudan okuyoruz
                                                     text: ListItemData.mentionSenderName !== undefined ? ListItemData.mentionSenderName : "Bilinmeyen"
-                                                    //textStyle.color: Color.create("#075E54")
                                                     textStyle.fontSize: FontSize.XSmall
                                                     textStyle.fontWeight: FontWeight.Bold
                                                     bottomMargin: 0
@@ -895,7 +928,6 @@ Page {
                                                     // C++'tan gelen attachment türü veya mesaj içeriği
                                                     text: ListItemData.mentionText !== undefined ? ListItemData.mentionText : ""
                                                     textStyle.fontSize: FontSize.XSmall
-                                                    //textStyle.color: Color.Gray
                                                     topMargin: 0
                                                     multiline: true
                                                     autoSize.maxLineCount: 2
@@ -938,7 +970,7 @@ Page {
                                             property real contWidth: ListItemData.text===""?rootMessageItem.listView.displayWidth*0.5:rootMessageItem.listView.displayWidth*0.7
                                             property real contHeight: contWidth*ratio
                                             visible: (ListItemData.type && ListItemData.type === "IMAGE")
-                                            background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.darkenColor(rootMessageItem.listView.rootPage.bubbleColor,15)): Color.create("#f6f5f3")
+                                            background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.darkenColor(rootMessageItem.listView.rootPage.bubbleColor,15)): rootMessageItem.listView.rootPage.isDark?Color.create("#202020"):Color.create("#f6f5f3")
                                             preferredWidth: ListItemData.size ? contWidth : rootMessageItem.listView.displayWidth * 0.5
                                             preferredHeight: {if(ListItemData.localImagePath === undefined || ListItemData.localImagePath === "") {if (ratio>1.25){return contWidth*1.25} else{return contHeight} }
                                             else {if (ratio>1.25) return contWidth*1.25
@@ -1036,7 +1068,7 @@ Page {
                                             id:audioVideoCont
                                             property string upperType: ListItemData.type ? ListItemData.type.toString().toUpperCase() : ""
                                             visible: (upperType === "AUDIO" || upperType ==="VOICE" || upperType ==="VIDEO")
-                                            background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.darkenColor(rootMessageItem.listView.rootPage.bubbleColor,15)): Color.create("#f6f5f3")
+                                            background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.darkenColor(rootMessageItem.listView.rootPage.bubbleColor,15)): rootMessageItem.listView.rootPage.isDark?Color.create("#202020"):Color.create("#f6f5f3")
                                             preferredWidth:ListItemData.text===""?undefined:rootMessageItem.listView.displayWidth*0.7
                                             
                                             
@@ -1096,6 +1128,7 @@ Page {
                                                             horizontalAlignment: HorizontalAlignment.Left
                                                             multiline: true
                                                             autoSize.maxLineCount: 2
+                                                            
                                                         }
                                                         Label {
                                                             text:ListItemData.extension ? ListItemData.fileSizeStr+" • "+ListItemData.extension.substring(1).toUpperCase():""
@@ -1145,7 +1178,7 @@ Page {
                                             id:fileCont
                                             property string upperType: ListItemData.type ? ListItemData.type.toString().toUpperCase() : ""
                                             visible: (upperType === "FILE")
-                                            background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.darkenColor(rootMessageItem.listView.rootPage.bubbleColor,15)): Color.create("#f6f5f3")
+                                            background: ListItemData.isSender ? Color.create(rootMessageItem.listView.rootPage.darkenColor(rootMessageItem.listView.rootPage.bubbleColor,15)): rootMessageItem.listView.rootPage.isDark?Color.create("#202020"):Color.create("#f6f5f3")
                                             preferredWidth:ListItemData.text===""?undefined:rootMessageItem.listView.displayWidth*0.7
                                             
                                             
@@ -1219,6 +1252,7 @@ Page {
                                                             horizontalAlignment: HorizontalAlignment.Left
                                                             multiline: true
                                                             autoSize.maxLineCount: 2
+                                                            
                                                         }
                                                         Label {
                                                             text:ListItemData.extension ? ListItemData.fileSizeStr+" • "+ListItemData.extension.substring(1).toUpperCase():""
@@ -1274,7 +1308,7 @@ Page {
                                                 textFormat: TextFormat.Html
                                                 topMargin: 0;
                                                 bottomMargin: 0;
-                                                textStyle.color:Color.Black
+                                                
                                             
                                             }
                                         }
@@ -1386,7 +1420,7 @@ Label {
                     Button {
                         preferredWidth: ui.du(8.0)
                         text: "✖"
-                        color: Color.create("#ff282828")
+                        color: Color.create("#282828")
                         onClicked: {
                             isEditing=false
                             editCont.visible=false
@@ -1424,7 +1458,7 @@ Label {
             Container {
                 id: bottomBar
                 visible: (!chatPage.isSearchMode && !readOnly)
-                background: Color.create("#ff282828")
+                background: isDark? Color.create("#282828"):Color.create("#f0f0f0")
                 
                 layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
                 leftPadding: ui.du(1.0); rightPadding: ui.du(1.5); topPadding: ui.du(1.0); bottomPadding: ui.du(1.0)
@@ -1443,7 +1477,7 @@ Label {
                 // 1. Emoji Button
                 ImageButton {
                     // Çekmece açıksa klavye ikonuna, kapalıysa emoji ikonuna dönüştür
-                    defaultImageSource: chatPage.isEmojiPickerVisible ? "asset:///images/ic_keyboard.png" : "asset:///images/ic_emoji.png"
+                    defaultImageSource: chatPage.isEmojiPickerVisible ? isDark?"asset:///images/ic_keyboard.png":"asset:///images/ic_keyboard_dark.png" : "asset:///images/ic_emoji.png"
                     verticalAlignment: VerticalAlignment.Center
                     preferredWidth: ui.du(8.0)
                     preferredHeight: ui.du(8.0)
@@ -1458,6 +1492,7 @@ Label {
                             inputField.requestFocus();
                         }
                     }
+                    navigation.defaultHighlightEnabled: false
                 }
                 
                 Container {
@@ -1467,7 +1502,7 @@ Label {
                         preferredHeight:ui.du(1.0)
                         minHeight:ui.du(1.0)
                         horizontalAlignment: HorizontalAlignment.Fill                        
-                        background: Color.create("#f5f5f5")
+                        background: isDark?Color.create("#202020"):Color.create("#f5f5f5")
                         bottomMargin: 0
                         visible: isReplying
                     }
@@ -1475,7 +1510,7 @@ Label {
                     Container {
                         id: replyCont
                         visible: isReplying                                  
-                        background: Color.create("#f5f5f5")
+                        background: isDark?Color.create("#202020"):Color.create("#f5f5f5")
                         bottomMargin: ui.du(0)
                         
                         //topPadding: ui.du(0.5)
@@ -1483,12 +1518,12 @@ Label {
                         Container {
                             layout: StackLayout { orientation: LayoutOrientation.LeftToRight}
                             rightPadding: ui.du(1.0)
-                            background: Color.create("#E0E0E0")
+                            background: isDark?Color.create("#282828"):Color.create("#f0f0f0")
                             Container {                            
                                 preferredWidth:ui.du(1.0)
                                 minWidth:ui.du(1.0)
                                 verticalAlignment: VerticalAlignment.Fill
-                                background: Color.create("#f5f5f5")
+                                background: isDark?Color.create("#202020"):Color.create("#f5f5f5")
                             }
                             Container {
                                 preferredWidth:ui.du(1.0)
@@ -1568,7 +1603,7 @@ Label {
                             preferredWidth: ui.du(1.0)
                             minWidth: ui.du(1.0)
                             verticalAlignment: VerticalAlignment.Fill
-                            background: Color.create("#f5f5f5")
+                            background: isDark?Color.create("#202020"):Color.create("#f5f5f5")
                         }
                     }
                     
@@ -1590,7 +1625,7 @@ Label {
                             preferredWidth:ui.du(1.0)
                             minWidth:ui.du(1.0)
                             verticalAlignment: VerticalAlignment.Fill
-                            background: Color.create("#f5f5f5")
+                            background: isDark?Color.create("#202020"):Color.create("#f5f5f5")
                         }
                         
                         Container {
@@ -1602,14 +1637,14 @@ Label {
                                 preferredHeight:ui.du(1.0)
                                 minHeight:ui.du(1.0)
                                 horizontalAlignment: HorizontalAlignment.Fill
-                                background: Color.create("#f5f5f5")
+                                background: isDark?Color.create("#202020"):Color.create("#f5f5f5")
                             }
                             
                             Container {
                                 //visible:(ListItemData.localImagePath === undefined || ListItemData.localImagePath === "")
                                 horizontalAlignment: HorizontalAlignment.Fill
                                 verticalAlignment: VerticalAlignment.Fill
-                                background: Color.create("#E0E0E0")
+                                background: isDark?Color.create("#282828"):Color.create("#f0f0f0")
                                 leftPadding: ui.du(1.0)
                                 rightPadding: ui.du(1.0)
                                 topPadding: ui.du(0.5)
@@ -1704,7 +1739,7 @@ Label {
                                 preferredHeight:ui.du(1.0)
                                 minHeight:ui.du(1.0)
                                 horizontalAlignment: HorizontalAlignment.Fill
-                                background: Color.create("#f5f5f5")
+                                background: isDark?Color.create("#202020"):Color.create("#f5f5f5")
                             }
                             
                         }
@@ -1713,7 +1748,7 @@ Label {
                             preferredWidth:ui.du(1.0)
                             minWidth:ui.du(1.0)
                             verticalAlignment: VerticalAlignment.Fill
-                            background: Color.create("#f5f5f5")
+                            background: isDark?Color.create("#202020"):Color.create("#f5f5f5")
                         }
                         
                         
@@ -1758,7 +1793,7 @@ Label {
                 ImageButton {
                     id:attachButton
                     visible:true
-                    defaultImageSource: "asset:///images/ic_attach.png"
+                    defaultImageSource: isDark? "asset:///images/ic_attach.png":"asset:///images/ic_attach_dark.png"
                     verticalAlignment: VerticalAlignment.Center
                     preferredWidth: ui.du(7.0)
                     preferredHeight: ui.du(7.0)
@@ -1770,13 +1805,14 @@ Label {
                         attachmentPage.chatID = chatPage.chatID;
                         navigationPane.push(attachmentPage);
                     }
+                    navigation.defaultHighlightEnabled: false
                 }
                 
                 // 4. Send/Voice Button
                 ImageButton {
                     id: sendButton
                     //defaultImageSource: sendButtonUrl
-                    defaultImageSource: "asset:///images/ic_send.png";
+                    defaultImageSource: isDark? "asset:///images/ic_send.png": "asset:///images/ic_send_dark.png";
                     verticalAlignment: VerticalAlignment.Center
                     preferredWidth: ui.du(8.0)
                     preferredHeight: ui.du(8.0)
@@ -1858,6 +1894,7 @@ Label {
                             dat.editMessage(chatID, editMsgID, outgoingMsg);
                         }
                     }
+                    navigation.defaultHighlightEnabled: false
                 }
             }
             
@@ -1869,7 +1906,6 @@ Label {
                 horizontalAlignment: HorizontalAlignment.Fill
                 // Native klavyenin yaklaşık kapladığı alan boyutunda sabit bir yükseklik
                 preferredHeight: ui.du(38.0)
-                background: Color.create("#E5DDD5")
                 
                 layout: DockLayout {
                 }

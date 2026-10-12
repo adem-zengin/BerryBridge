@@ -29,6 +29,9 @@
 #include <bb/cascades/pickers/FilePickerSortOrder>
 #include <bb/cascades/pickers/FilePickerViewMode>
 #include <bb/cascades/pickers/FileType>
+#include <bb/cascades/ThemeSupport>
+#include <bb/cascades/VisualStyle>
+#include <QSettings>
 
 using namespace bb::cascades;
 
@@ -47,6 +50,16 @@ Q_DECL_EXPORT int main(int argc, char **argv)
     qmlRegisterType<Database>("com.database.web", 1, 0, "Database");
     qmlRegisterType<LocationSession>("my.location", 1, 0, "LocationSession");
     ApplicationUI appui;
+
+    QSettings settings;
+    bool isDarkMode = settings.value("settings/darkMode", false).toBool();
+
+    // 2. Global temayı C++ üzerinden programatik olarak set ediyoruz
+    if (isDarkMode) {
+        Application::instance()->themeSupport()->setVisualStyle(VisualStyle::Dark);
+    } else {
+        Application::instance()->themeSupport()->setVisualStyle(VisualStyle::Bright);
+    }
 
     // Enter the application main event loop.
     return Application::exec();

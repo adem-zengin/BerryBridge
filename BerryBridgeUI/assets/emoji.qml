@@ -11,6 +11,7 @@ Page {
     
     titleBar: TitleBar {
         title: "Reactions"
+        scrollBehavior: TitleBarScrollBehavior.Sticky
         
         // 1. Sol taraftaki Eylem (Cancel)
         dismissAction: ActionItem {
@@ -35,8 +36,6 @@ Page {
         id: emojiPickerContainer
         visible: chatPage.isEmojiPickerVisible 
         horizontalAlignment: HorizontalAlignment.Fill
-        // Native klavyenin yaklaşık kapladığı alan boyutunda sabit bir yükseklik
-        background: Color.create("#E5DDD5")
         
         layout: DockLayout {}
         

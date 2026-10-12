@@ -3,6 +3,7 @@ import bb.cascades 1.4
 Page {
     titleBar: TitleBar {
         title: "Help"
+        scrollBehavior: TitleBarScrollBehavior.Sticky
     }
     Container {
     horizontalAlignment: HorizontalAlignment.Fill

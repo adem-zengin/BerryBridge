@@ -13,25 +13,30 @@ Tab {
     }
     
     property alias tabTitle: genericTab.title
-    property alias titleBarTitle: titleBar.title
+    property alias titleBarTitle: titleBarLabel.text
     property TabbedPane mainRef
     property variant database: dat
+    property variant appObject: app
     
     // --- TEMA DEĞİŞKENLERİ ---
     property string primaryColor: "#444444"
     property string chatBgColor: "#FFFA00"
     property string bubbleColor: "#E0E0E0"
     property string unreadBadgeColor: "#FF0000"
+    property bool isDark
     
     // --- SAYFALAMA DEĞİŞKENLERİ ---
     property int chatOffset: 0
     property int pageLimit: 25
     property bool hasMoreChats: true
-    
     property string imgSource
     
     // Uygulama ikonu (Gerekirse bu da dinamik yapılabilir)
     imageSource: imgSource
+    
+    onCreationCompleted: {
+        isDark = app.darkMode;
+    }
     
     attachedObjects: [
         ArrayDataModel {
@@ -39,57 +44,265 @@ Tab {
         }
     ]
     
+    function openChatByChatId(targetChatId) {
+        var foundItem = null;
+        var foundIndex = -1;
+        for (var i = 0; i < internalModel.size(); i++) {
+            // BlackBerry 10 DataModel eleman çekerken dizi formatında IndexPath ([i]) bekler
+            var item = internalModel.data([i]);             
+            if (item) {
+                if (item.chatID === targetChatId) {
+                    foundItem = item;
+                    foundIndex = i;
+                    break;
+                }
+            }
+        }
+        
+        // Eğer modelde bulamadıysak veritabanından (dat) doğrudan çekebiliriz
+        // (Örn: dat.getChatDetails(accountID, targetChatId) gibi bir fonksiyonunuz varsa)
+        //if (!foundItem && typeof dat.getChatDetails === "function") {
+        //    foundItem = dat.getChatDetails(accountID, targetChatId);
+        //}
+        
+        if (foundItem) {
+            // Okunmamış mesaj sayısını sıfırlama mantığı (ListView'deki onTriggered ile aynı)
+            if (foundItem.unreadCount > 0 && foundIndex !== -1) {
+                foundItem.unreadCount = 0;
+                internalModel.replace(foundIndex, foundItem);
+                
+                if (database) {
+                    database.markChatAsRead(accountID, targetChatId);
+                }
+            }
+            
+            // Şimdi chatUI.qml sayfasını oluşturup push ediyoruz
+            var chatPage = chatUIDelegate.createObject(navigationPane);
+            chatPage.accountID = accountID;
+            chatPage.chatID = foundItem.chatID;
+            chatPage.chatTitle = foundItem.displayUpper;
+            chatPage.chatType = foundItem.chatType; 
+            chatPage.readOnly = foundItem.isReadOnly;
+            chatPage.unreadCount = foundItem.unreadCount;
+            chatPage.mainRef = mainRef;
+            
+            // Renkleri aktarıyoruz
+            chatPage.primaryColor = primaryColor;
+            chatPage.chatBgColor = chatBgColor;
+            chatPage.bubbleColor = bubbleColor;
+            
+            chatPage.loadMessages();
+            navigationPane.push(chatPage);
+            console.log("[TAB] Chat sayfası başarıyla açıldı ve push edildi.");
+        } else {
+            console.log("[TAB] HATA: Verilen chatID modelde veya DB'de bulunamadı: " + targetChatId);
+        }
+    }
+    
     function getModel() {
         return internalModel;
     }
     
     // Platform bazlı varsayılan renkleri döndüren fonksiyon
-    function getDefaultColors(accID) {
+    function getDefaultColors(accID, isDark) {
         var net = accID.toLowerCase();
-        if (net.indexOf("whatsapp") !== -1) return { primary: "#21BD5C", bg: "#E5DDD5", bubble: "#D8FDD2", badge: "#21BD5C" };
-        if (net.indexOf("telegram") !== -1) return { primary: "#24A1DE", bg: "#E4ECEF", bubble: "#E1FFC7", badge: "#24A1DE" };
-        if (net.indexOf("instagram") !== -1) return { primary: "#E1306C", bg: "#CCCCCC", bubble: "#f9d6e2", badge: "#E1306C" };
-        if (net.indexOf("signal") !== -1) return { primary: "#3A76F0", bg: "#CCCCCC", bubble: "#d8e4fc", badge: "#3A76F0" };
-        if (net.indexOf("facebook") !== -1) return { primary: "#0084FF", bg: "#CCCCCC", bubble: "#cce6ff", badge: "#ADD8E6" };
-        if (net.indexOf("twitter") !== -1) return { primary: "#000000", bg: "#CCCCCC", bubble: "#d9d9d9", badge: "#000000" };
-        if (net.indexOf("gmessages") !== -1 || net.indexOf("googlemessages") !== -1  || net.indexOf("rcs") !== -1 || net.indexOf("sms") !== -1) return { primary: "#1A73E8", bg: "#CCCCCC", bubble: "#d1e3fa", badge: "#1A73E8" };
-        if (net.indexOf("googlechat") !== -1 || net.indexOf("gchat") !== -1) return { primary: "#00796B", bg: "#CCCCCC", bubble: "#cce4e1", badge: "#00796B" };
-        if (net.indexOf("googlevoice") !== -1 || net.indexOf("gvoice") !== -1) return { primary: "#009688", bg: "#CCCCCC", bubble: "#cceae7", badge: "#009688" };
-        if (net.indexOf("linkedin") !== -1) return { primary: "#0A66C2", bg: "#E9E5DF", bubble: "#cee0f3", badge: "#0A66C2" };
-        if (net.indexOf("discord") !== -1) return { primary: "#5865F2", bg: "#36393F", bubble: "#dee0fc", badge: "#5865F2" };
-        if (net.indexOf("slack") !== -1) return { primary: "#4A154B", bg: "#CCCCCC", bubble: "#dbd0db", badge: "#4A154B" };
-        if (net.indexOf("irc") !== -1) return { primary: "#808080", bg: "#000000", bubble: "#d9d9d9", badge: "#808080" };
-        if (net.indexOf("matrix") !== -1) return { primary: "#0DBD8B", bg: "#CCCCCC", bubble: "#cff2e8", badge: "#0DBD8B" };
-        if (net.indexOf("imessage") !== -1) return { primary: "#34C759", bg: "#CCCCCC", bubble: "#d6f4de", badge: "#34C759" };
-        if (net.indexOf("line") !== -1) return { primary: "#06C755", bg: "#8BACD9", bubble: "#cdf4dd", badge: "#06C755" };
-        if (net.indexOf("tumblr") !== -1) return { primary: "#36465D", bg: "#001935", bubble: "#d7dadf", badge: "#36465D" };
         
-        return { primary: "#444444", bg: "#FF0000", bubble: "#E0E0E0", badge: "#FF0000" }; // Default
+        if (net.indexOf("whatsapp") !== -1) {
+            return { 
+                primary: "#21BD5C", 
+                bg: isDark ? "#000000" : "#E5DDD5", 
+                bubble: isDark ? "#134D37" : "#D8FDD2", 
+                badge: "#21BD5C" 
+            };
+        }
+        if (net.indexOf("telegram") !== -1) {
+            return { 
+                primary: "#24A1DE", 
+                bg: isDark ? "#000000" : "#E4ECEF", 
+                bubble: isDark ? "#14374B" : "#E1FFC7", 
+                badge: "#24A1DE" 
+            };
+        }
+        if (net.indexOf("instagram") !== -1) {
+            return { 
+                primary: "#E1306C", 
+                bg: isDark ? "#000000" : "#CCCCCC", 
+                bubble: isDark ? "#382029" : "#f9d6e2", 
+                badge: "#E1306C" 
+            };
+        }
+        if (net.indexOf("signal") !== -1) {
+            return { 
+                primary: "#3A76F0", 
+                bg: isDark ? "#000000" : "#CCCCCC", 
+                bubble: isDark ? "#122649" : "#d8e4fc", 
+                badge: "#3A76F0" 
+            };
+        }
+        if (net.indexOf("facebook") !== -1) {
+            return { 
+                primary: "#0084FF", 
+                bg: isDark ? "#000000" : "#CCCCCC", 
+                bubble: isDark ? "#123356" : "#cce6ff", 
+                badge: "#ADD8E6" 
+            };
+        }
+        if (net.indexOf("twitter") !== -1) {
+            return { 
+                primary: "#000000", 
+                bg: isDark ? "#000000" : "#CCCCCC", 
+                bubble: isDark ? "#262626" : "#d9d9d9", 
+                badge: "#000000" 
+            };
+        }
+        if (net.indexOf("gmessages") !== -1 || net.indexOf("googlemessages") !== -1 || net.indexOf("rcs") !== -1 || net.indexOf("sms") !== -1) {
+            return { 
+                primary: "#1A73E8", 
+                bg: isDark ? "#000000" : "#CCCCCC", 
+                bubble: isDark ? "#123052" : "#d1e3fa", 
+                badge: "#1A73E8" 
+            };
+        }
+        if (net.indexOf("googlechat") !== -1 || net.indexOf("gchat") !== -1) {
+            return { 
+                primary: "#9cf1f4", 
+                bg: isDark ? "#000000" : "#c1dddf", 
+                bubble: isDark ? "#246B70" : "#9cf1f4", 
+                badge: "#9cf1f4" 
+            };
+        }
+        if (net.indexOf("googlevoice") !== -1 || net.indexOf("gvoice") !== -1) {
+            return { 
+                primary: "#009688", 
+                bg: isDark ? "#000000" : "#CCCCCC", 
+                bubble: isDark ? "#0B2B28" : "#cceae7", 
+                badge: "#009688" 
+            };
+        }
+        if (net.indexOf("linkedin") !== -1) {
+            return { 
+                primary: "#0A66C2", 
+                bg: isDark ? "#000000" : "#E9E5DF", 
+                bubble: isDark ? "#0F2844" : "#cee0f3", 
+                badge: "#0A66C2" 
+            };
+        }
+        if (net.indexOf("discord") !== -1) {
+            return { 
+                primary: "#5865F2", 
+                bg: isDark ? "#000000" : "#36393F", 
+                bubble: isDark ? "#171E4B" : "#dee0fc", 
+                badge: "#5865F2" 
+            };
+        }
+        if (net.indexOf("slack") !== -1) {
+            return { 
+                primary: "#4A154B", 
+                bg: isDark ? "#000000" : "#CCCCCC", 
+                bubble: isDark ? "#2B112C" : "#dbd0db", 
+                badge: "#4A154B" 
+            };
+        }
+        if (net.indexOf("irc") !== -1) {
+            return { 
+                primary: "#808080", 
+                bg: isDark ? "#000000" : "#000000", 
+                bubble: isDark ? "#262626" : "#d9d9d9", 
+                badge: "#808080" 
+            };
+        }
+        if (net.indexOf("matrix") !== -1) {
+            return { 
+                primary: "#0DBD8B", 
+                bg: isDark ? "#000000" : "#CCCCCC", 
+                bubble: isDark ? "#0D382B" : "#cff2e8", 
+                badge: "#0DBD8B" 
+            };
+        }
+        if (net.indexOf("imessage") !== -1) {
+            return { 
+                primary: "#34C759", 
+                bg: isDark ? "#000000" : "#CCCCCC", 
+                bubble: isDark ? "#123B22" : "#d6f4de", 
+                badge: "#34C759" 
+            };
+        }
+        if (net.indexOf("line") !== -1) {
+            return { 
+                primary: "#06C755", 
+                bg: isDark ? "#000000" : "#8BACD9", 
+                bubble: isDark ? "#0D3B23" : "#cdf4dd", 
+                badge: "#06C755" 
+            };
+        }
+        if (net.indexOf("tumblr") !== -1) {
+            return { 
+                primary: "#36465D", 
+                bg: isDark ? "#000000" : "#001935", 
+                bubble: isDark ? "#1B232E" : "#d7dadf", 
+                badge: "#36465D" 
+            };
+        }
+        
+        return { 
+            primary: "#444444", 
+            bg: isDark ? "#000000" : "#FF0000", 
+            bubble: isDark ? "#2E2E2E" : "#E0E0E0", 
+            badge: "#FF0000" 
+        };
     }
     
     // QSettings üzerinden temayı yükleme (main.qml içinden çağrılacak)
     function loadThemeSettings() {
-        var def = getDefaultColors(accountID);
+        // getDefaultColors fonksiyonu artık isDark durumuna göre doğru setleri döndürüyor
+        var defLight = getDefaultColors(accountID, false); // Aydınlık mod varsayılanları
+        var defDark = getDefaultColors(accountID, true);   // Karanlık mod varsayılanları
         
         // Veritabanı ve metodların varlığını güvenli şekilde kontrol et
         if (app && typeof app.getSetting === "function") {
-            var p = app.getSetting("theme_primary_" + accountID, "");
-            var bg = app.getSetting("theme_bg_" + accountID, "");
-            var bubble = app.getSetting("theme_bubble_" + accountID, "");
-            var badge = app.getSetting("theme_badge_" + accountID, "");
+            // --- LIGHT MODE DEĞERLERİNİ ÇEK ---
+            var p_light = app.getSetting("theme_primary_light_" + accountID, "");
+            var bg_light = app.getSetting("theme_bg_light_" + accountID, "");
+            var bubble_light = app.getSetting("theme_bubble_light_" + accountID, "");
+            var badge_light = app.getSetting("theme_badge_light_" + accountID, "");
             
-            primaryColor = (p && p.length > 3) ? p : def.primary;
-            chatBgColor = (bg && bg.length > 3) ? bg : def.bg;
-            bubbleColor = (bubble && bubble.length > 3) ? bubble : def.bubble;
-            unreadBadgeColor = (badge && badge.length > 3) ? badge : def.badge;
+            // --- DARK MODE DEĞERLERİNİ ÇEK ---
+            var p_dark = app.getSetting("theme_primary_dark_" + accountID, "");
+            var bg_dark = app.getSetting("theme_bg_dark_" + accountID, "");
+            var bubble_dark = app.getSetting("theme_bubble_dark_" + accountID, "");
+            var badge_dark = app.getSetting("theme_badge_dark_" + accountID, "");
             
-            // Eğer veritabanında kayıtlı değilse varsayılanı kaydet
-            app.updateSetting("theme_primary_" + accountID, primaryColor);
-            app.updateSetting("theme_bg_" + accountID, chatBgColor);
-            app.updateSetting("theme_bubble_" + accountID, bubbleColor);
-            app.updateSetting("theme_badge_" + accountID, unreadBadgeColor);
+            // Kayıtlı değilse varsayılanları ata
+            var final_p_light = (p_light && p_light.length > 3) ? p_light : defLight.primary;
+            var final_bg_light = (bg_light && bg_light.length > 3) ? bg_light : defLight.bg;
+            var final_bubble_light = (bubble_light && bubble_light.length > 3) ? bubble_light : defLight.bubble;
+            var final_badge_light = (badge_light && badge_light.length > 3) ? badge_light : defLight.badge;
+            
+            var final_p_dark = (p_dark && p_dark.length > 3) ? p_dark : defDark.primary;
+            var final_bg_dark = (bg_dark && bg_dark.length > 3) ? bg_dark : defDark.bg;
+            var final_bubble_dark = (bubble_dark && bubble_dark.length > 3) ? bubble_dark : defDark.bubble;
+            var final_badge_dark = (badge_dark && badge_dark.length > 3) ? badge_dark : defDark.badge;
+            
+            // Her iki modun renklerini de kalıcı hafızaya kaydet / güncelle
+            app.updateSetting("theme_primary_light_" + accountID, final_p_light);
+            app.updateSetting("theme_bg_light_" + accountID, final_bg_light);
+            app.updateSetting("theme_bubble_light_" + accountID, final_bubble_light);
+            app.updateSetting("theme_badge_light_" + accountID, final_badge_light);
+            
+            app.updateSetting("theme_primary_dark_" + accountID, final_p_dark);
+            app.updateSetting("theme_bg_dark_" + accountID, final_bg_dark);
+            app.updateSetting("theme_bubble_dark_" + accountID, final_bubble_dark);
+            app.updateSetting("theme_badge_dark_" + accountID, final_badge_dark);
+            
+            // Anlık aktif olan moda göre sayfa değişkenlerini set et
+            primaryColor = isDark ? final_p_dark : final_p_light;
+            chatBgColor = isDark ? final_bg_dark : final_bg_light;
+            bubbleColor = isDark ? final_bubble_dark : final_bubble_light;
+            unreadBadgeColor = isDark ? final_badge_dark : final_badge_light;
+        
         } else {
-            // C++ tarafında getsetting yoksa veya database null ise varsayılanları kullan
+            // C++ tarafında getsetting yoksa o anki moda göre varsayılanları kullan
+            var def = getDefaultColors(accountID, isDark);
             primaryColor = def.primary;
             chatBgColor = def.bg;
             bubbleColor = def.bubble;
@@ -164,7 +377,10 @@ Tab {
             if (typeof page.cleanup === 'function') {
                 page.cleanup();
             }
-            page.destroy(); 
+            page.destroy();
+            if (page === mainRef.settingsPageV) {
+                mainRef.updateAccountTabs();
+            } 
         }
         
         onTopChanged: {
@@ -174,10 +390,27 @@ Tab {
         }
         
         Page {
-            titleBar: TitleBar { 
+            
+            titleBar: TitleBar {
                 id: titleBar
-                kind: TitleBarKind.Default
+                kind: TitleBarKind.FreeForm
                 scrollBehavior: TitleBarScrollBehavior.Sticky
+                kindProperties: FreeFormTitleBarKindProperties {
+                    Container {
+                        layout: DockLayout {}
+                        leftPadding: ui.du(2.0)
+                        rightPadding: ui.du(2.0)
+                        
+                        Label {
+                            id: titleBarLabel                            
+                            verticalAlignment: VerticalAlignment.Center
+                            horizontalAlignment: HorizontalAlignment.Left
+                            textStyle.fontWeight: FontWeight.W500
+                            textStyle.fontSize: FontSize.Large
+                        }
+                    
+                    }
+                }
             }
             
             actions: [
@@ -247,7 +480,12 @@ Tab {
                     }
                 }
             ]
-            
+            Container {
+                id: mainC
+                layout: DockLayout {}
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Fill
+                
             ListView {
                 id: listView
                 dataModel: internalModel
@@ -329,7 +567,7 @@ Tab {
                         type: ""
                         CustomListItem {
                             dividerVisible: false
-                            highlightAppearance: HighlightAppearance.Full
+                            //highlightAppearance: HighlightAppearance.None
                             id: itemRoot
                             
                             onFocusedChanged: {
@@ -468,7 +706,7 @@ Tab {
                                     }
                                     ImageView {
                                         id: circle
-                                        imageSource: "asset:///images/wPro.png"
+                                        imageSource: itemRoot.ListItem.view.rootTab.isDark ? "asset:///images/bPro.png":"asset:///images/wPro.png"
                                         horizontalAlignment: HorizontalAlignment.Fill
                                         verticalAlignment: VerticalAlignment.Fill
                                         
@@ -514,7 +752,7 @@ Tab {
                                             textStyle.fontSize: FontSize.Small
                                             textStyle.fontWeight: FontWeight.W200
                                             topMargin: 0; bottomMargin: 0
-                                            multiline: false 
+                                            multiline: false
                                         }
                                         
                                         ImageView {
@@ -561,7 +799,7 @@ Tab {
                         }
                     }
                 ]
-            }
+            }}
         }
         
         attachedObjects: [

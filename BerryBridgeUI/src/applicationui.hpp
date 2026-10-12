@@ -43,6 +43,9 @@ class ApplicationUI: public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int dbUpdateTrigger READ dbUpdateTrigger NOTIFY dbUpdateTriggerChanged)
+    Q_PROPERTY(bool disableTrackpadFocus READ disableTrackpadFocus WRITE setDisableTrackpadFocus NOTIFY disableTrackpadFocusChanged)
+    Q_PROPERTY(bool darkMode READ darkMode WRITE setDarkMode NOTIFY darkModeChanged)
+    Q_PROPERTY(bool isClassic READ isClassic CONSTANT)
 
 public:
     ApplicationUI();
@@ -57,6 +60,18 @@ public:
     Q_INVOKABLE void checkForUpdates();
     Q_INVOKABLE void clearNewContent(const QString &accountId);
     Q_INVOKABLE bool hasNewContent(const QString &accountId) const;
+    // Getter ve Setter metotları
+    bool disableTrackpadFocus() const;
+    Q_INVOKABLE void setDisableTrackpadFocus(bool disable);
+
+    bool darkMode() const;
+    Q_INVOKABLE void setDarkMode(bool dark);
+    Q_INVOKABLE void exitApp();
+    bool isClassic() const;
+    Q_INVOKABLE QString pendingAccountId() const { return m_pendingAccountId; }
+    Q_INVOKABLE QString pendingChatId() const { return m_pendingChatId; }
+    Q_INVOKABLE void clearPendingInvoke();
+
 
 
 signals:
@@ -65,11 +80,15 @@ signals:
     void dbUpdateTriggerChanged();
     void updateCheckCompleted(bool updateRequired, QString latestVersion, QString releaseNotes);
     void updateCheckFailed(QString errorMessage);
+    void disableTrackpadFocusChanged(bool disable);
+    void darkModeChanged(bool dark);
+    void openChatRequested(QString accountId, QString chatId);
 
 private slots:
     void onSystemLanguageChanged();
     void onUIRefreshTriggered(const QString &path);
     void onReplyFinished(QNetworkReply* reply);
+    void onInvoked(const bb::system::InvokeRequest &request);
 private:
     QTranslator* m_translator;
     bb::cascades::LocaleHandler* m_localeHandler;
@@ -80,6 +99,10 @@ private:
     QNetworkAccessManager* m_networkManager;
     bool isVersionGreater(const QString& current, const QString& latest);
     QString formatMarkdownToHtml(const QString& markdown);
+    bool m_disableTrackpadFocus;
+    bool m_darkMode;
+    QString m_pendingAccountId;
+    QString m_pendingChatId;
 };
 
 #endif /* ApplicationUI_HPP_ */

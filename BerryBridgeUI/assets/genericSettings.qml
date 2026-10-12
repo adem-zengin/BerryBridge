@@ -11,18 +11,27 @@ Page {
     property string tChatBgColor: ""
     property string tBubbleColor: ""
     property string tUnreadBadgeColor: ""
+    property bool isDark
+    
+    onCreationCompleted: {
+        isDark = app.darkMode;
+    }
     
     function savePreference(key, value) {
         dat.updateSetting("state_pref_" + key + "_" + accountID, value);
     }
     
     function saveThemePref(key, value) {
-        app.updateSetting("theme_" + key + "_" + accountID, value);
-        mainRef.updateAccountTabs();
+        if (isDark){
+            app.updateSetting("theme_" + key + "_dark_" + accountID, value);
+        }else {
+            app.updateSetting("theme_" + key + "_light_" + accountID, value);
+        }    
     }
     
     titleBar: TitleBar {
         title: accountName + " Settings"
+        scrollBehavior: TitleBarScrollBehavior.Sticky
     }
     
     ScrollView {
@@ -107,7 +116,7 @@ Page {
                 }
                 
                 Button {
-                    text: "Save Theme"
+                    text: "Apply Theme"
                     horizontalAlignment: HorizontalAlignment.Center
                     topMargin: 30.0
                     onClicked: {
@@ -115,6 +124,7 @@ Page {
                         saveThemePref("bg", bgInput.text);
                         saveThemePref("bubble", bubbleInput.text);
                         saveThemePref("badge", badgeInput.text);
+                        mainRef.updateAccountTabs();
                         console.log("[AccountSettings] Theme saved for " + accountID);
                     }
                 }

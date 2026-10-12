@@ -10,6 +10,7 @@ Page {
     
     titleBar: TitleBar {
         title: "Attach"
+        scrollBehavior: TitleBarScrollBehavior.Sticky
     }
     
     Container {
@@ -39,7 +40,7 @@ Page {
                     
                     CustomListItem {
                         dividerVisible: true
-                        highlightAppearance: HighlightAppearance.Frame
+                        highlightAppearance: HighlightAppearance.None
                         
                         Container {
                             layout: StackLayout {

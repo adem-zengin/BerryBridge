@@ -785,8 +785,14 @@ void Service::createMessageNotification(const QString& accountID, const QString&
     msgNotify->setBody(plainBody);
 
     bb::system::InvokeRequest invokeReq;
-    invokeReq.setTarget("com.example.BerryBeeperUI");
+    invokeReq.setTarget("com.example.BerryBridgeUI");
     invokeReq.setAction("bb.action.START");
+    invokeReq.setMimeType("x-application/berrybridge-chat");
+
+    // Hesap ve sohbet ID'sini URI query parametresi olarak ekliyoruz
+    QString uriStr = QString("berrybridge://chat?account=%1&chat=%2").arg(accountID).arg(chatID);
+    invokeReq.setUri(QUrl(uriStr));
+
     msgNotify->setInvokeRequest(invokeReq);
     msgNotify->notify();
     // Belleği temizle
