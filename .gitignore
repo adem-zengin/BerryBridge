@@ -9,6 +9,7 @@ simulator-Release/
 # Otomatik üretilen derleme dosyaları
 *.o
 *.obj
+*.pri
 *.gch
 *.pro.user*
 .qmake.stash

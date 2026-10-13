@@ -54,6 +54,7 @@ Page {
     property alias atButton: attachButton
     
     property bool isDark
+    property bool disableTrackpadFocus
     
     resizeBehavior: PageResizeBehavior.Resize
     
@@ -477,6 +478,7 @@ Page {
     
     onCreationCompleted: {
         isDark = app.darkMode;
+        disableTrackpadFocus = app.disableTrackpadFocus
         app.dbUpdateTriggerChanged.connect(chatPage.handleDbUpdate);
         dat.imageDownloaded.connect(chatPage.handleImageDownloaded);
         dat.downloadProgress.connect(chatPage.handleDownloadProgress);
@@ -650,7 +652,7 @@ Page {
                         type: "message"                        
                         Container {
                             id: rootMessageItem
-                            navigation.focusPolicy: rootMessageItem.listView.rootPage.appObject.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
+                            navigation.focusPolicy: rootMessageItem.listView.rootPage.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
                             // En dış seviyede ListView referansını sabitliyoruz
                             property variant listView: ListItem.view
                             property string chatType: listView ? listView.chatType : ""
@@ -692,7 +694,7 @@ Page {
                             // Normal Mesaj Görünümü
                             Container {
                                 visible: !ListItemData.isLoadMore
-                                navigation.focusPolicy: rootMessageItem.listView.rootPage.appObject.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
+                                navigation.focusPolicy: rootMessageItem.listView.rootPage.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
                                 Container {
                                     id: msgContainer
                                     navigation.focusPolicy: rootMessageItem.listView.rootPage.appObject.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
@@ -1446,7 +1448,6 @@ Label {
                          textFormat: TextFormat.Html
                          topMargin: 0;
                          bottomMargin: 0;
-                         textStyle.color:Color.Black
                      
                      }
                 }
@@ -1492,7 +1493,7 @@ Label {
                             inputField.requestFocus();
                         }
                     }
-                    navigation.defaultHighlightEnabled: false
+                    navigation.defaultHighlightEnabled: !disableTrackpadFocus
                 }
                 
                 Container {
@@ -1805,7 +1806,7 @@ Label {
                         attachmentPage.chatID = chatPage.chatID;
                         navigationPane.push(attachmentPage);
                     }
-                    navigation.defaultHighlightEnabled: false
+                    navigation.defaultHighlightEnabled: !disableTrackpadFocus
                 }
                 
                 // 4. Send/Voice Button
@@ -1894,7 +1895,7 @@ Label {
                             dat.editMessage(chatID, editMsgID, outgoingMsg);
                         }
                     }
-                    navigation.defaultHighlightEnabled: false
+                    navigation.defaultHighlightEnabled: !disableTrackpadFocus
                 }
             }
             
