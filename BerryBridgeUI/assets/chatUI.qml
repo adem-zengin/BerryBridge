@@ -697,7 +697,7 @@ Page {
                                 navigation.focusPolicy: rootMessageItem.listView.rootPage.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
                                 Container {
                                     id: msgContainer
-                                    navigation.focusPolicy: rootMessageItem.listView.rootPage.appObject.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
+                                    navigation.focusPolicy: rootMessageItem.listView.rootPage.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
                                     property string chatType: rootMessageItem.listView.chatType
                                     contextActions: [
                                         ActionSet {

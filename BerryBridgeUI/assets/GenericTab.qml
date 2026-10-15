@@ -31,11 +31,14 @@ Tab {
     property bool hasMoreChats: true
     property string imgSource
     
+    property bool disableTrackpadFocus
+    
     // Uygulama ikonu (Gerekirse bu da dinamik yapılabilir)
     imageSource: imgSource
     
     onCreationCompleted: {
         isDark = app.darkMode;
+        disableTrackpadFocus = app.disableTrackpadFocus;
     }
     
     attachedObjects: [
@@ -568,6 +571,7 @@ Tab {
                         CustomListItem {
                             dividerVisible: false
                             //highlightAppearance: HighlightAppearance.None
+                            navigation.focusPolicy: itemRoot.ListItem.view.rootTab.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default                         
                             id: itemRoot
                             
                             onFocusedChanged: {
@@ -671,7 +675,8 @@ Tab {
                             Container {
                                 layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
                                 leftPadding: ui.sdu(2.0); rightPadding: ui.sdu(2.0); topPadding: ui.sdu(3.0); bottomPadding: ui.sdu(3.0)
-                                
+                                navigation.focusPolicy: itemRoot.ListItem.view.rootTab.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
+
                                 
                                 Container {
                                     preferredWidth: ui.sdu(12.0)
