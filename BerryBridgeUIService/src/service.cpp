@@ -416,7 +416,7 @@ void Service::onSyncResponseReceived()
                     attachmentsJson = QString::fromUtf8(buffer);
                 }
 
-                QString reactionsJson = "[]";
+                QString reactionsJson = "";
                 QVariantList rawReactions = msg["reactions"].toList();
                 if (!rawReactions.isEmpty()) {
                     buffer.clear();
@@ -424,7 +424,7 @@ void Service::onSyncResponseReceived()
                     reactionsJson = QString::fromUtf8(buffer);
                 }
 
-                QString mentionsJson = "[]";
+                QString mentionsJson = "";
                 QVariantList mentionsList = msg["mentions"].toList();
                 if (!mentionsList.isEmpty()) {
                     buffer.clear();
@@ -432,7 +432,7 @@ void Service::onSyncResponseReceived()
                     mentionsJson = QString::fromUtf8(buffer);
                 }
 
-                QString seenJson = "{}";
+                QString seenJson = "";
                 QVariantMap seenMap = msg["seen"].toMap();
                 if (!seenMap.isEmpty()) {
                     buffer.clear();
@@ -546,12 +546,12 @@ void Service::onSyncResponseReceived()
             upsertChat.bindValue(20, rawChat.value("isLowPriority", false).toBool() ? 1 : 0);
             upsertChat.bindValue(21, rawChat.value("messageExpirySeconds", 0).toInt());
 
-            QString participantsJsonStr = "[]";
+            QString participantsJsonStr = "";
             if (!rawChat.value("participants").isNull()) {
                 jda.saveToBuffer(rawChat.value("participants"), &participantsJsonStr);
             }
 
-            QString capabilitiesJsonStr = "{}";
+            QString capabilitiesJsonStr = "";
             if (!rawChat.value("capabilities").isNull()) {
                 jda.saveToBuffer(rawChat.value("capabilities"), &capabilitiesJsonStr);
             }
@@ -1687,7 +1687,7 @@ void Service::processChatAsync(const QString &msgId, const QString &chatId, cons
         QString cTitle = "Unknown chat";
         QString cType = "UNKNOWN";
         QString cAccountID = "";
-        QString participantsJsonStr = "{}";
+        QString participantsJsonStr = "";
         bb::data::JsonDataAccess jda;
 
         bool chatDbUpdated = false;

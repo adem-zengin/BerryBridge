@@ -71,6 +71,9 @@ public:
     Q_INVOKABLE QVariantMap getImageDimensions(const QString &filePath);
     Q_INVOKABLE QString toPlainText(const QString& htmlText);
 
+    bool initAvatarDatabase();
+    void downloadAvatar(const QString &chatID, const QString &imgUrl);
+
 
 
 signals:
@@ -100,6 +103,7 @@ signals:
     void chatMarkedUnreadSuccessfully();
     void requestNotification(const QString &msgId, const QString &accountID, const QString &chatID, const QString &senderName, const QString &msgType, const QString &text);
     void messagesUpdated();
+    void avatarDownloaded(const QString &chatID, const QString &localUrl);
 
 
 private slots:
@@ -125,6 +129,7 @@ private slots:
     void resumeSyncing();
     void performPeriodicSync();
     void onSyncResponseReceived();
+    void onAvatarDownloaded();
 
 private:
     bool m_initRun;

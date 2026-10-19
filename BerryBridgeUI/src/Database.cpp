@@ -62,6 +62,7 @@ Database::Database(QObject *parent) : QObject(parent)
     m_chatsReply = 0;
     chatPercent = 0;
     initContext();
+    initAvatarDatabase();
     m_url = m_settings.value("serverUrl").toString();
     m_accessToken = m_settings.value("accessToken").toString();
 }
@@ -279,7 +280,6 @@ void Database::onAccountsFetched() {
             // accID -> network eşleşmesi
             m_settings.setValue(accID, network);
 
-            // YENİ: accID ile ilişkili loginID eşleşmesi (Örn: "whatsapp_loginID" -> "905356822935")
             m_settings.setValue(accID + "_loginID", loginID);
 
             if (!m_settings.contains("state_" + accID)) {
@@ -322,9 +322,9 @@ QVariantList Database::getChatListForAccount(const QString &accountID, int limit
     }
 
     QSqlQuery query(db);
-    // LIMIT ve OFFSET eklendi
+    // imgURL sütunu sorguya eklendi
     query.prepare("SELECT id, title, type, unreadCount, lastActivity, "
-                  "isPinned, isArchived, isMuted, preview_json, isReadOnly "
+                  "isPinned, isArchived, isMuted, preview_json, isReadOnly, imgURL, participants_json "
                   "FROM chats "
                   "WHERE accountID = ? "
                   "ORDER BY isPinned DESC, lastActivity DESC "
@@ -339,7 +339,6 @@ QVariantList Database::getChatListForAccount(const QString &accountID, int limit
         return chatList;
     }
 
-    // 3. ADIM: Veri İşleme
     QSqlRecord rec = query.record();
     const int idIdx = rec.indexOf("id");
     const int titleIdx = rec.indexOf("title");
@@ -350,21 +349,50 @@ QVariantList Database::getChatListForAccount(const QString &accountID, int limit
     const int archivedIdx = rec.indexOf("isArchived");
     const int mutedIdx = rec.indexOf("isMuted");
     const int readOnlyIdx = rec.indexOf("isReadOnly");
-
-    // İPTAL EDİLEN: const int previewIdx = rec.indexOf("preview");
-    // EKLENEN: Sütun adını preview_json olarak güncelledik
     const int previewIdx = rec.indexOf("preview_json");
+    const int imgUrlIdx = rec.indexOf("imgURL"); // Avatar URL sütunu
+    const int participantsIdx = rec.indexOf("participants_json"); // Avatar URL sütunu
 
-    bb::data::JsonDataAccess jda; // JSON ayrıştırıcıyı döngü dışında tanımlıyoruz
+    bb::data::JsonDataAccess jda;
 
     while (query.next()) {
+        QString chatID = query.value(idIdx).toString();
         QString chatTitle = query.value(titleIdx).toString();
         QString timestamp = query.value(lastActivityIdx).toString();
         QString chatType = query.value(typeIdx).toString();
+        QString chatImgUrl = query.value(imgUrlIdx).toString();
+        QString participantsJsonStr = query.value(participantsIdx).toString();
+        //qDebug() << "[DATABASE] chatTitle1:" << chatTitle<<" chatImgUrl:"<<chatImgUrl;
+        //qDebug() << "[DATABASE] chatTitle1:" << chatTitle<<" participantsJsonStr:"<<participantsJsonStr;
+        // --- GÖRSEL URL BOŞSA PARTICIPANTS_JSON ÜZERİNDEN ALMA MANTIĞI ---
+        if (chatImgUrl.isEmpty() && !participantsJsonStr.isEmpty() && chatType == "single") {
+            QString cleanedJson = participantsJsonStr.trimmed();
+
+            // Varsa baştaki "[]" ve {} karakterlerini substring (mid) ile kırpıyoruz
+            if (cleanedJson.startsWith("[]")) {
+                cleanedJson = cleanedJson.mid(2).trimmed();
+            }
+            if (cleanedJson.startsWith("{}")) {
+                cleanedJson = cleanedJson.mid(2).trimmed();
+            }
+
+            QVariant parsedData = jda.loadFromBuffer(cleanedJson);
+            if (!jda.hasError()) {
+                QVariantMap wrapperMap = parsedData.toMap();
+                QVariantList itemsList = wrapperMap.value("items").toList();
+                if (!itemsList.isEmpty()) {
+                    QVariantMap firstItem = itemsList.at(0).toMap();
+                    chatImgUrl = firstItem.value("imgURL").toString();
+                    //qDebug() << "[DATABASE] chatTitle2:" << chatTitle<<" chatImgUrl:"<<chatImgUrl;
+                }
+            } else {
+                qWarning() << "[DATABASE] Failed to parse participants_json for chatID:" << chatID;
+            }
+        }
 
         QVariantMap chat;
         chat["accountID"] = accountID;
-        chat["chatID"] = query.value(idIdx).toString();
+        chat["chatID"] = chatID;
         chat["chatName"] = chatTitle;
         chat["unreadCount"] = query.value(unreadIdx).toInt();
 
@@ -376,15 +404,43 @@ QVariantList Database::getChatListForAccount(const QString &accountID, int limit
         chat["lastMessageTime"] = formatTimeForDisplay(timestamp);
         chat["timestamp"] = timestamp;
 
+        // --- AVATAR ÖNBELLEK VE KONTROL MANTIĞI ---
+        QString localAvatarUrl = "";
+        if (!chatImgUrl.isEmpty()) {
+            QSqlDatabase avatarDb = QSqlDatabase::database("avatars_db_conn");
+            if (avatarDb.isOpen()) {
+                QSqlQuery avatarQuery(avatarDb);
+                avatarQuery.prepare("SELECT imgURL, localURL FROM chat_avatars WHERE chatID = ?");
+                avatarQuery.addBindValue(chatID);
 
-        // --- YENİ PREVIEW JSON İŞLEME MANTIĞI ---
+                bool needsDownload = true;
+                if (avatarQuery.exec() && avatarQuery.next()) {
+                    QString cachedImgUrl = avatarQuery.value(0).toString();
+                    QString cachedLocalUrl = avatarQuery.value(1).toString();
+
+                    // URL aynıysa ve dosya diskte hâlâ duruyorsa tekrar indirme
+                    if (cachedImgUrl == chatImgUrl && !cachedLocalUrl.isEmpty() && QFile::exists(cachedLocalUrl)) {
+                        localAvatarUrl = "file://" + cachedLocalUrl;
+                        needsDownload = false;
+                    }
+                }
+
+                if (needsDownload) {
+                    downloadAvatar(chatID, chatImgUrl);
+                }
+            }
+        }else{
+            //qDebug() << "[DATABASE] participants:" << participants;
+
+        }
+        chat["avatarUrl"] = localAvatarUrl;
+
+        // --- PREVIEW JSON İŞLEME MANTIĞI ---
         QString previewJsonStr = query.value(previewIdx).toString();
         QString lastMsgText = "";
         QString lastMsgType = "TEXT";
         bool isSender = false;
         QString senderName = "";
-
-        //qDebug()<<"[DATABASE] previewJsonStr"<<previewJsonStr;
 
         if (!previewJsonStr.isEmpty()) {
             QVariantMap previewMap = jda.loadFromBuffer(previewJsonStr).toMap();
@@ -403,7 +459,7 @@ QVariantList Database::getChatListForAccount(const QString &accountID, int limit
             QString lowerTitle = chatTitle.toLower();
             if (lowerTitle.contains("status") || lowerTitle.contains("broadcast")) {
                 chatType = "status";
-            } else if (senderName.contains("bot", Qt::CaseInsensitive)) { // Küçük/büyük harf duyarsız yapıldı
+            } else if (senderName.contains("bot", Qt::CaseInsensitive)) {
                 chatType = "channel";
             }
         }
@@ -413,21 +469,19 @@ QVariantList Database::getChatListForAccount(const QString &accountID, int limit
         }
 
         if (chatType != "single" && chatType != "channel" && !displayBody.isEmpty()){
-            // Grup sohbeti mantığı
             plainBody = QString("%1: %2").arg(senderName.toUpper()).arg(displayBody);
-        }else {
+        } else {
             plainBody = displayBody;
         }
 
-        //bool isReaction=displayBody.contains("reacted");
-        bool isDel=displayBody.contains("deleted");
-        bool isEdit=displayBody.contains("edited");
+        bool isDel = displayBody.contains("deleted");
+        bool isEdit = displayBody.contains("edited");
 
         if (isDel || isEdit){
             plainBody = QString("%1 %2").arg(senderName.toUpper()).arg(displayBody);
         }
 
-        if(isDel && chatType == "group"){
+        if (isDel && chatType == "group"){
             plainBody = " A message is deleted";
         }
 
@@ -440,7 +494,7 @@ QVariantList Database::getChatListForAccount(const QString &accountID, int limit
             chat["avatarInitial"] = "S";
         }
 
-        chat["chatType"] = chatType; // Manipüle edilmiş type'ı sonradan atıyoruz
+        chat["chatType"] = chatType;
 
         chatList.append(chat);
     }
@@ -448,7 +502,6 @@ QVariantList Database::getChatListForAccount(const QString &accountID, int limit
     qDebug() << "[DATABASE] Loaded" << chatList.size() << "chats for account:" << accountID;
     return chatList;
 }
-
 void Database::syncChats(const QString &cursor, QString callbackAction) {
     if (m_chatsReply && cursor.isEmpty()) return;
 
@@ -722,7 +775,7 @@ void Database::onInitialMessagesFetched() {
                 }
                 ins.addBindValue(attachmentsJson);
 
-                QString reactionsJson = "[]";
+                QString reactionsJson = "";
                 QVariantList rawReactions = msg["reactions"].toList();
                 if (!rawReactions.isEmpty()) {
                     QByteArray buffer;
@@ -737,7 +790,7 @@ void Database::onInitialMessagesFetched() {
                 ins.addBindValue(msg["linkedMessageID"].toString());
 
                 // --- 2. Mentions ---
-                QString mentionsJson = "[]";
+                QString mentionsJson = "";
                 QVariantList mentionsList = msg["mentions"].toList();
                 if (!mentionsList.isEmpty()) {
                     QByteArray buffer;
@@ -747,7 +800,7 @@ void Database::onInitialMessagesFetched() {
                 ins.addBindValue(mentionsJson);
 
                 // --- 3. Seen (Sorun Yaşadığınız Kısım) ---
-                QString seenJson = "{}";
+                QString seenJson = "";
                 QVariantMap seenMap = msg["seen"].toMap();
                 if (!seenMap.isEmpty()) {
                     QByteArray buffer;
@@ -845,14 +898,14 @@ void Database::onChatsDetailsFetched() {
     chat["messageExpirySeconds"] = rawChat.value("messageExpirySeconds").isNull() ? 0 : rawChat.value("messageExpirySeconds").toInt();
 
     // Participants objesini JSON string'e çevir
-    QString participantsJsonStr = "[]";
+    QString participantsJsonStr = "";
     if (!rawChat.value("participants").isNull()) {
         jda.saveToBuffer(rawChat.value("participants"), &participantsJsonStr);
     }
     chat["participants_json"] = participantsJsonStr;
 
     // Capabilities objesini JSON string'e çevir
-    QString capabilitiesJsonStr = "{}";
+    QString capabilitiesJsonStr = "";
     if (!rawChat.value("capabilities").isNull()) {
         jda.saveToBuffer(rawChat.value("capabilities"), &capabilitiesJsonStr);
     }
@@ -1630,6 +1683,7 @@ void Database::downloadAttachment(const QString &mxcUrl, const QString &messageI
     QString localPath = dirPath + "/" + fileName;
 
     qDebug() << "[DATABASE] Requesting download for type:" << typeUpper << " Path:" << localPath;
+    qDebug() << "[DATABASE] mxcUrl:" << mxcUrl;
 
     // Dosya zaten indirilmişse tekrar ağ isteği atma, doğrudan önbellekten kullan
     if (QFile::exists(localPath)) {
@@ -3655,7 +3709,7 @@ void Database::onSyncResponseReceived()
                     attachmentsJson = QString::fromUtf8(buffer);
                 }
 
-                QString reactionsJson = "[]";
+                QString reactionsJson = "";
                 QVariantList rawReactions = msg["reactions"].toList();
                 if (!rawReactions.isEmpty()) {
                     buffer.clear();
@@ -3663,7 +3717,7 @@ void Database::onSyncResponseReceived()
                     reactionsJson = QString::fromUtf8(buffer);
                 }
 
-                QString mentionsJson = "[]";
+                QString mentionsJson = "";
                 QVariantList mentionsList = msg["mentions"].toList();
                 if (!mentionsList.isEmpty()) {
                     buffer.clear();
@@ -3671,7 +3725,7 @@ void Database::onSyncResponseReceived()
                     mentionsJson = QString::fromUtf8(buffer);
                 }
 
-                QString seenJson = "{}";
+                QString seenJson = "";
                 QVariantMap seenMap = msg["seen"].toMap();
                 if (!seenMap.isEmpty()) {
                     buffer.clear();
@@ -3785,12 +3839,12 @@ void Database::onSyncResponseReceived()
             upsertChat.bindValue(20, rawChat.value("isLowPriority", false).toBool() ? 1 : 0);
             upsertChat.bindValue(21, rawChat.value("messageExpirySeconds", 0).toInt());
 
-            QString participantsJsonStr = "[]";
+            QString participantsJsonStr = "";
             if (!rawChat.value("participants").isNull()) {
                 jda.saveToBuffer(rawChat.value("participants"), &participantsJsonStr);
             }
 
-            QString capabilitiesJsonStr = "{}";
+            QString capabilitiesJsonStr = "";
             if (!rawChat.value("capabilities").isNull()) {
                 jda.saveToBuffer(rawChat.value("capabilities"), &capabilitiesJsonStr);
             }
@@ -3904,5 +3958,149 @@ void Database::sendNotificationToService(
 
     if (m_invokeManager) {
         m_invokeManager->invoke(request);
+    }
+}
+
+bool Database::initAvatarDatabase() {
+    bool avatarsSuccess = false;
+
+    // Bağlantı daha önceden kalmışsa güvenli şekilde temizle
+    if (QSqlDatabase::contains("avatars_db_conn")) {
+        {
+            QSqlDatabase oldDb = QSqlDatabase::database("avatars_db_conn");
+            oldDb.close();
+        }
+        QSqlDatabase::removeDatabase("avatars_db_conn");
+    }
+
+    // Ayrı bir veritabanı bağlantısı ve dosyası oluşturuyoruz
+    {
+        QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "avatars_db_conn");
+        db.setDatabaseName("/accounts/1000/shared/misc/Beeper/avatars.db");
+
+        if (!db.open()) {
+            qCritical() << "[CRITICAL] Avatars dosyası açılamadı:" << db.lastError().text();
+            return false;
+        }
+
+        QSqlQuery q(db);
+        q.exec("PRAGMA journal_mode=WAL;");
+        q.exec("PRAGMA synchronous=NORMAL;");
+        q.exec("PRAGMA busy_timeout=5000;"); // Eşzamanlı erişim kilitlenmelerini önlemek için
+
+        avatarsSuccess = q.exec(
+            "CREATE TABLE IF NOT EXISTS chat_avatars ("
+            "chatID TEXT PRIMARY KEY, "
+            "imgURL TEXT, "
+            "localURL TEXT"
+            ")"
+        );
+
+        if (!avatarsSuccess) {
+            qCritical() << "Avatars Tablo Oluşturma Hatası:" << q.lastError().text();
+        } else {
+            qDebug() << "Avatars veritabanı ve tablosu başarıyla hazırlandı.";
+        }
+    }
+
+    return avatarsSuccess;
+}
+
+void Database::downloadAvatar(const QString &chatID, const QString &imgUrl) {
+    if (chatID.isEmpty() || imgUrl.isEmpty()) return;
+
+    QString dirPath = "/accounts/1000/shared/misc/Beeper/avatars";
+    QDir dir(dirPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+        // Galeride görünmemesi için .nomedia dosyası oluşturuyoruz
+        QFile nomediaFile(dirPath + "/.nomedia");
+        if (nomediaFile.open(QIODevice::WriteOnly)) {
+            nomediaFile.close();
+        }
+    }
+
+    QString safeChatId = QString(chatID.toUtf8().toHex());
+    QString localPath = dirPath + "/" + safeChatId + ".jpg";
+
+    qDebug() << "[DATABASE] Requesting avatar download for chatID:" << chatID << " Path:" << localPath;
+
+    // --- URL / DOSYA YOLU DÖNÜŞTÜRME MANTIĞI ---
+    QString formattedImgUrl = imgUrl;
+
+    // Eğer gelen değer http, mxc, localmxc veya file ile başlamıyorsa (yani düz bir yerel dosya yoluysa)
+    if (!formattedImgUrl.startsWith("http://") &&
+        !formattedImgUrl.startsWith("https://") &&
+        !formattedImgUrl.startsWith("mxc://") &&
+        !formattedImgUrl.startsWith("localmxc://") &&
+        !formattedImgUrl.startsWith("file://")) {
+
+        // Windows ters bölülerini (backslash) düz bölüye (slash) çeviriyoruz
+        formattedImgUrl.replace('\\', '/');
+
+        // Sürücü harfiyle (örn. C:/) veya mutlak yolla başlıyorsa file:/// ekliyoruz
+        if (formattedImgUrl.contains(":/")) {
+            formattedImgUrl = "file:///" + formattedImgUrl;
+        } else if (formattedImgUrl.startsWith("/")) {
+            formattedImgUrl = "file://" + formattedImgUrl;
+        } else {
+            formattedImgUrl = "file:///" + formattedImgUrl;
+        }
+    }
+
+    QUrl url;
+    if (formattedImgUrl.startsWith("http://") || formattedImgUrl.startsWith("https://")) {
+        url = QUrl(formattedImgUrl);
+    } else {
+        url = QUrl(m_url + "/v1/assets/serve");
+        url.addQueryItem("url", formattedImgUrl);
+    }
+
+    QNetworkRequest request(url);
+    QString authHeader = "Bearer " + m_accessToken;
+    request.setRawHeader("Authorization", authHeader.toLatin1());
+
+    QNetworkReply* reply = m_netManager->get(request);
+    reply->setProperty("chatID", chatID);
+    reply->setProperty("imgURL", imgUrl);
+    reply->setProperty("localPath", localPath);
+
+    connect(reply, SIGNAL(finished()), this, SLOT(onAvatarDownloaded()));
+}
+
+void Database::onAvatarDownloaded() {
+    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+    if (!reply) return;
+
+    reply->deleteLater();
+
+    if (reply->error() != QNetworkReply::NoError) {
+        qWarning() << "[DATABASE] Avatar download failed:" << reply->errorString();
+        return;
+    }
+
+    QString chatID = reply->property("chatID").toString();
+    QString imgUrl = reply->property("imgURL").toString();
+    QString localPath = reply->property("localPath").toString();
+
+    QFile file(localPath);
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(reply->readAll());
+        file.close();
+
+        // Ayrı olan avatar veritabanına kayıt işlemi
+        QSqlDatabase db = QSqlDatabase::database("avatars_db_conn");
+        if (db.isOpen()) {
+            QSqlQuery query(db);
+            query.prepare("INSERT OR REPLACE INTO chat_avatars (chatID, imgURL, localURL) VALUES (?, ?, ?)");
+            query.addBindValue(chatID);
+            query.addBindValue(imgUrl);
+            query.addBindValue(localPath);
+            if (!query.exec()) {
+                qWarning() << "[DATABASE] Failed to save avatar cache:" << query.lastError().text();
+            }
+        }
+
+        emit avatarDownloaded(chatID, "file://" + localPath);
     }
 }

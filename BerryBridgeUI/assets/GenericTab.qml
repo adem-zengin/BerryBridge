@@ -14,6 +14,11 @@ Tab {
     
     property alias tabTitle: genericTab.title
     property alias titleBarTitle: titleBarLabel.text
+    property alias avatarLarge: avatarLarge
+    property alias avatarLargeLabel: avatarLargeLabel
+    property alias avatarLargeInitial: avatarLargeInitial
+    property alias chatInfo: chatInfo
+    property alias overlayCont: overlayCont
     property TabbedPane mainRef
     property variant database: dat
     property variant appObject: app
@@ -39,6 +44,7 @@ Tab {
     onCreationCompleted: {
         isDark = app.darkMode;
         disableTrackpadFocus = app.disableTrackpadFocus;
+        dat.avatarDownloaded.connect(genericTab.updateChatAvatar);
     }
     
     attachedObjects: [
@@ -46,6 +52,18 @@ Tab {
             id: internalModel
         }
     ]
+    
+    // Sinyal geldiğinde çağrılacak ve modeli güncelleyecek fonksiyon
+    function updateChatAvatar(targetChatId, newLocalUrl) {
+        for (var i = 0; i < internalModel.size(); i++) {
+            var item = internalModel.data([i]);
+            if (item && item.chatID === targetChatId) {
+                item.avatarUrl = newLocalUrl;
+                internalModel.replace(i, item); // Modeli güncelliyoruz
+                break;
+            }
+        }
+    }
     
     function openChatByChatId(targetChatId) {
         var foundItem = null;
@@ -87,6 +105,9 @@ Tab {
             chatPage.chatType = foundItem.chatType; 
             chatPage.readOnly = foundItem.isReadOnly;
             chatPage.unreadCount = foundItem.unreadCount;
+            chatPage.avatarUrl = foundItem.avatarUrl;
+            chatPage.avatarInitial = foundItem.avatarInitial;
+            chatPage.avatarColor = darkenColor(primaryColor, 90);
             chatPage.mainRef = mainRef;
             
             // Renkleri aktarıyoruz
@@ -400,9 +421,19 @@ Tab {
                 scrollBehavior: TitleBarScrollBehavior.Sticky
                 kindProperties: FreeFormTitleBarKindProperties {
                     Container {
-                        layout: DockLayout {}
-                        leftPadding: ui.du(2.0)
-                        rightPadding: ui.du(2.0)
+                        layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                        leftPadding: ui.sdu(2.0)
+                        rightPadding: ui.sdu(2.0)
+                        topPadding: ui.sdu(0.8)
+                        bottomPadding: ui.sdu(0.8)
+                        
+                        ImageView {
+                            imageSource: imgSource
+                            horizontalAlignment: HorizontalAlignment.Fill
+                            verticalAlignment: VerticalAlignment.Fill                   
+                            scalingMethod:ScalingMethod.AspectFit
+                            filterColor: Color.create(primaryColor)
+                        }
                         
                         Label {
                             id: titleBarLabel                            
@@ -410,6 +441,7 @@ Tab {
                             horizontalAlignment: HorizontalAlignment.Left
                             textStyle.fontWeight: FontWeight.W500
                             textStyle.fontSize: FontSize.Large
+                            textStyle.color: Color.create(primaryColor)
                         }
                     
                     }
@@ -524,6 +556,9 @@ Tab {
                     chatPage.chatType = selectedItem.chatType; 
                     chatPage.readOnly = selectedItem.isReadOnly;
                     chatPage.unreadCount = selectedItem.unreadCount;
+                    chatPage.avatarUrl = selectedItem.avatarUrl;
+                    chatPage.avatarInitial = selectedItem.avatarInitial;
+                    chatPage.avatarColor = darkenColor(primaryColor, 90);
                     chatPage.mainRef = mainRef;
                     
                     // Renkleri chatUI'a geçiriyoruz
@@ -685,36 +720,62 @@ Tab {
                                     background: Color.create(itemRoot.ListItem.view.rootTab.darkenColor(itemRoot.ListItem.view.rootTab.primaryColor, 90))
                                     verticalAlignment: VerticalAlignment.Center
                                     layout: DockLayout {}
+                                    
+                                    // Sadece avatar yoksa harf gösterilsin
                                     Label {
-                                        visible: ListItemData.chatType=="single"
+                                        visible: ListItemData.chatType == "single" && (!ListItemData.avatarUrl || ListItemData.avatarUrl === "")
                                         text: ListItemData.avatarInitial
                                         textStyle.color: Color.White
                                         textStyle.fontSize: FontSize.Large
                                         horizontalAlignment: HorizontalAlignment.Center
                                         verticalAlignment: VerticalAlignment.Center
                                     }
+                                    
+                                    // Sadece avatar yoksa kanal ikonu gösterilsin
                                     ImageView {
-                                        visible: ListItemData.chatType=="channel"
+                                        visible: ListItemData.chatType == "channel" && (!ListItemData.avatarUrl || ListItemData.avatarUrl === "")
                                         imageSource: "asset:///images/channel.png"
                                         horizontalAlignment: HorizontalAlignment.Center
                                         verticalAlignment: VerticalAlignment.Center
                                         preferredWidth: ui.sdu(8.0)
                                         preferredHeight: ui.sdu(8.0)
                                     }
+                                    
+                                    // Sadece avatar yoksa grup ikonu gösterilsin
                                     ImageView {
-                                        visible: ListItemData.chatType=="group"
+                                        visible: ListItemData.chatType == "group" && (!ListItemData.avatarUrl || ListItemData.avatarUrl === "")
                                         imageSource: "asset:///images/ic_group_white.png"
                                         horizontalAlignment: HorizontalAlignment.Center
                                         verticalAlignment: VerticalAlignment.Center
                                         preferredWidth: ui.sdu(8.0)
                                         preferredHeight: ui.sdu(8.0)
                                     }
+                                    
+                                    // İndirilen gerçek avatar resmi (Varsa en üstte bu görünür)
                                     ImageView {
+                                        visible: ListItemData.avatarUrl !== "" && ListItemData.avatarUrl !== undefined
+                                        imageSource: ListItemData.avatarUrl
+                                        horizontalAlignment: HorizontalAlignment.Center
+                                        verticalAlignment: VerticalAlignment.Center
+                                        preferredWidth: ui.sdu(12.0)
+                                        preferredHeight: ui.sdu(12.0)
+                                        
+                                    }
+                                    
+                                    // Çerçeve / maske katmanı
+                                    ImageButton {
                                         id: circle
-                                        imageSource: itemRoot.ListItem.view.rootTab.isDark ? "asset:///images/bPro.png":"asset:///images/wPro.png"
+                                        defaultImageSource: itemRoot.ListItem.view.rootTab.isDark ? "asset:///images/bPro.png":"asset:///images/wPro.png"
                                         horizontalAlignment: HorizontalAlignment.Fill
                                         verticalAlignment: VerticalAlignment.Fill
-                                        
+                                        navigation.defaultHighlightEnabled: false
+                                        onClicked: {
+                                            itemRoot.ListItem.view.rootTab.avatarLarge.imageSource = ListItemData.avatarUrl;
+                                            itemRoot.ListItem.view.rootTab.avatarLargeInitial.text = ListItemData.avatarInitial;
+                                            itemRoot.ListItem.view.rootTab.avatarLargeLabel.text = ListItemData.displayUpper;
+                                            itemRoot.ListItem.view.rootTab.chatInfo.visible = true
+                                            itemRoot.ListItem.view.rootTab.overlayCont.visible = true
+                                        }
                                     }
                                 }
                                 
@@ -804,7 +865,138 @@ Tab {
                         }
                     }
                 ]
-            }}
+            }
+            
+            Container {
+                id: overlayCont
+                visible: false
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Fill
+                background: Color.create("#cc000000")               
+            }
+            
+
+            
+            Container {
+                id: chatInfo
+                visible: false
+                layoutProperties: StackLayoutProperties { spaceQuota: 1.0 }
+                layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
+                horizontalAlignment: HorizontalAlignment.Fill
+                verticalAlignment: VerticalAlignment.Fill
+                Container {
+                    layoutProperties: StackLayoutProperties { spaceQuota: 1.0 }
+                }
+                Container {
+                    preferredWidth: ui.sdu(50.0)
+                    horizontalAlignment: HorizontalAlignment.Center
+                    verticalAlignment: VerticalAlignment.Center
+                    background: Color.create(darkenColor(primaryColor, 90))
+                    
+                    Container {
+                        preferredWidth: ui.sdu(50.0)
+                        preferredHeight: ui.sdu(50.0)
+                        // Profil resmi arka planı primary color olsun
+                        background: darkenColor(primaryColor, 90)
+                        verticalAlignment: VerticalAlignment.Center
+                        layout: DockLayout {}
+                        
+                        // Sadece avatar yoksa harf gösterilsin
+                        Label {
+                            id: avatarLargeInitial
+                            textStyle.color: Color.White
+                            textFit.minFontSizeValue: ui.sdu(5.0)
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                        }
+                        
+                        // Sadece avatar yoksa kanal ikonu gösterilsin
+                        ImageView {
+                            id: avatarLarge
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                            preferredWidth: ui.sdu(50.0)
+                            preferredHeight: ui.sdu(50.0)
+                            onTouch: {
+                                dat.openImage(avatarLarge.imageSource);
+                                avatarLarge.imageSource = "";
+                                avatarLargeLabel.text = "";
+                                avatarLargeInitial.text = "";
+                                chatInfo.visible = false;
+                                overlayCont.visible = false;
+                            }
+                        }
+                        
+                        Container {
+                            background: Color.create("#77282828")
+                            bottomMargin: 0
+                            leftPadding: ui.sdu(2.0)
+                            topPadding: ui.sdu(1.0)
+                            bottomPadding:ui.sdu(1.0)
+                            verticalAlignment: VerticalAlignment.Top
+                            layout: StackLayout { orientation: LayoutOrientation.LeftToRight}
+                            Label {
+                                id: avatarLargeLabel
+                                verticalAlignment: VerticalAlignment.Center
+                                textStyle.fontWeight: FontWeight.W500
+                                textStyle.color: Color.White
+                                textStyle.textAlign: TextAlign.Left                               
+                            }
+                            Container {
+                                layoutProperties: StackLayoutProperties { spaceQuota: 1.0 }
+                            }
+                            Container {
+                                minWidth: ui.sdu(3.0)
+                                Label {
+                                    text: "✖ "
+                                    textStyle.color: Color.White
+                                    textStyle.textAlign: TextAlign.Right
+                                    leftMargin: 0
+                                    rightMargin: 0
+                                    onTouch: {
+                                        avatarLarge.imageSource = "";
+                                        avatarLargeLabel.text = "";
+                                        avatarLargeInitial.text = "";
+                                        chatInfo.visible = false;
+                                        overlayCont.visible = false;
+                                    }
+                                }
+                            }
+                                                        
+                            Container {                            
+                                preferredWidth:ui.sdu(2.0)
+                                minWidth:ui.sdu(2.0)
+                            }
+                        
+                        
+                        }              
+                    }
+                    
+                }
+                
+                Container {
+                    layoutProperties: StackLayoutProperties { spaceQuota: 1.0 }
+                }
+                animations: [
+                    ScaleTransition {
+                        id: scaleAnim
+                        fromX: 0.0
+                        toX: 1.0
+                        fromY: 0.0
+                        toY: 1.0
+                        duration: 250
+                        // İsteğe bağlı: easingCurve: FractionalCurve.Bezier veya benzeri eğriler eklenebilir
+                    }
+                ]
+                
+                onVisibleChanged: {
+                    if (visible) {
+                        scaleAnim.play();
+                    }
+                }
+            }
+            
+            }
         }
         
         attachedObjects: [

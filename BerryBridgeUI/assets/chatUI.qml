@@ -55,6 +55,93 @@ Page {
     
     property bool isDark
     property bool disableTrackpadFocus
+    property string avatarUrl
+    property string avatarInitial
+    property string avatarColor
+    
+    property variant categorizedEmojis: {
+        "Smileys & People": [
+        "😀", "😁", "😂", "😃", "😄", "😅", "😆", "😉", "😊", "😋", "😎", 
+        "😍", "😘", "😗", "😙", "😚", "☺", "😐", "😑", "😶", "😏", "😣", 
+        "😥", "😮", "😯", "😪", "😫", "😴", "😌", "😛", "😜", "😝", "😒", 
+        "😓", "😔", "😕", "😲", "👍", "👎", "👌", "✌", "👈", "👉", "👆", 
+        "👇", "☝", "✋", "👋", "👏", "🙌", "🙏", "😇", "😈",
+        "😵", "💪,👂", "👃", " 👀", "👄", "💋", "👤", "👥",
+        "👶", "👧", "👦", "👩", "👨", "👵", "👴", "👲", "👳", "👮"
+        ],
+        "Animals & Nature": [
+        "🔥","🐶","🐱","🐭","🐹","🐰","🐻","🐼","🐨",
+        "🐯","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🐤",
+        "🐣","🐥","🐺","🐗","🐴",
+        "🐝","🐛","🐌","🐞","🐜",
+        "🐢","🐍","🐙","🐡","🐠",
+        "🐟","🐬","🐊","🐅","🐆","🐘",
+        "🐪","🐫","🐃","🐄","🐎","🐖","🐏","🐑",
+        "🐐","🐕","🐩","🐈","🐓","🌲","🌳","🌴",
+        "🌵","🌽","🌿","☘","🍀","🍁","🍂","🍄"
+        ],
+        "Food & Drink": [
+        "🍏","🍎","🍐","🍊","🍋","🍌","🍉","🍇","🍓","🍈",
+        "🍒","🍑","🍍","🍅","🍆",
+        "🌽","🍠","🍞","🍖","🍗","🍔","🍟","🍕",
+        "🍳","🍲","🍱","🍘","🍙","🍚","🍛","🍜","🍝","🍠","🍢","🍣",
+        "🍤","🍥","🍡","🍦","🍧","🍨","🍩","🍪","🎂","🍰",
+        "🍫","🍬","🍭","🍮","🍯","🍼","☕","🍵","🍶",
+        "🍷","🍸","🍹","🍺","🍻","🍴","🔪"
+        ],
+        "Activity": [
+        "⚽","🏀","🏈","⚾","🎾","🏉","🎱",
+        "⛳","🎣","🎿","🏆","🎫🎪","🎨","🎰",
+        "🎲","♟","🃏","🀄","🎴"
+        ],
+        "Travel & Places": [
+        "🚗","🚕","🚙","🚌","🚎","🚓","🚑","🚒","🚐",
+        "🚚","🚛","🚜","🚲","🚨","🚔","🚍",
+        "🚘","🚖","🚡","🚠","🚟","🚃","🚋","🚞","🚝","🚄",
+        "🚅","🚈","🚂","🚆","🚇","🚊","🚉","✈",
+            "💺","🚀","🚁","⛵","🚤",
+            "🚢","⚓","🚧","⛽","🚏","🚦","🚥","🏁",
+            "🏰","🏯","🗽","⛲","⛺","🌁","🌃","🌄",
+            "🌅","🌆","🌉","♨","🌌","🎠","🎡","🎢","💈","🎪"
+        ],
+        "Objects": [
+        "💻","⌨","💽","💾","💿","📀",
+        "📼","📷","📹","🎥","📞","☎","📟","📠",
+        "📺","📻","⏰","⌚","⌛",
+        "⏳","📡","🔋","🔌","💡","🔦","💰","💴",
+        "💵","💶","💷","💸","💳","📈","📉","📊","📋",
+            "📌","📍","📎","📏","📐","✂","🔒","🔓","🔏","🔐","🔑"
+        ],
+        "Symbols": [
+        "❤","💛","💚","💙","💜","💔", 
+        "❣","💕","💞","💓","💗","💖","💘","💌","💋","💯", 
+        "💢","💥","💫","💦","💨","💬", 
+        "💭","💤","🏧","🚾","♿","🅿","🈳","🈴","🈲","🈸", 
+        "🈹","🈺","🉐","🉑","🌀","🔂","🔁","🔀","▶","⏩", 
+        "◀","⏪","🔼","🔽", 
+        "⏏","🎦","🔅","🔆","📶","📳","📴","♀","♂","⚕", 
+        "♾","♻","⚜","🔱","📛","🔰","⭕","✅","☑","✔", 
+        "✖","❌","❎","➕","➖","➗","➰","➿","〽","✳", 
+        "✴","❇","💱","💲","©","®","™"
+        ],
+        "Flags": [
+        "🏁","🚩","🎌","‍🌈‍","☠️",
+        "🇹🇷","🇺🇸","🇬🇧","🇩🇪","🇫🇷","🇮🇹","🇪🇸","🇷🇺","🇯🇵",
+            "🇰🇷","🇨🇦","🇦🇺","🇧🇷","🇮🇳","🇨🇳","🇸🇦","🇦🇿","🇳🇱",
+            "🇸🇪","🇨🇭","🇮🇷","🇬🇷","🇪🇬","🇵🇰","🇦🇷","🇲🇽","🇪🇺"
+        ]
+    }
+    
+    property variant categoryOrder: [
+    "Smileys & People",
+    "Animals & Nature",
+    "Food & Drink",
+    "Activity",
+    "Travel & Places",
+    "Objects",
+    "Symbols",
+    "Flags"
+    ]
     
     resizeBehavior: PageResizeBehavior.Resize
     
@@ -454,15 +541,103 @@ Page {
         dat.imageDownloaded.disconnect(chatPage.handleImageDownloaded);
         dat.downloadProgress.disconnect(chatPage.handleDownloadProgress);
     }
+    
+    function loadAllEmojis() {
+        emojiPickerModel.clear(); // Önce modeli temizleyelim
+        
+        // Tanımladığımız sırayı (categoryOrder) döngüye sokuyoruz
+        for (var c = 0; c < categoryOrder.length; c++) {
+            var catName = categoryOrder[c];
+            var emojiList = categorizedEmojis[catName];
+            
+            if (emojiList) {
+                for (var i = 0; i < emojiList.length; i++) {
+                    emojiPickerModel.append({ "category": catName, "emoji": emojiList[i] });
+                }
+            }
+        }
+    }
+    
+    // Belirli bir kategoriye göre filtreleme yapmak isterseniz:
+    function filterByCategory(categoryName) {
+        emojiPickerModel.clear();
+        var emojiList = categorizedEmojis[categoryName];
+        if (emojiList) {
+            for (var i = 0; i < emojiList.length; i++) {
+                emojiPickerModel.append({ "category": categoryName, "emoji": emojiList[i] });
+            }
+        }
+    }
   
     titleBar: TitleBar {
         kind: TitleBarKind.FreeForm
         scrollBehavior: TitleBarScrollBehavior.Sticky
         kindProperties: FreeFormTitleBarKindProperties {
             Container {
-                layout: DockLayout {}
-                leftPadding: ui.du(2.0)
-                rightPadding: ui.du(2.0)
+                layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
+                leftPadding: ui.sdu(2.0)
+                rightPadding: ui.sdu(2.0)
+                topPadding: ui.sdu(0.8)
+                bottomPadding: ui.sdu(0.8)
+                Container {
+                    // Profil resmi arka planı primary color olsun
+                    background: Color.create(avatarColor)
+                    verticalAlignment: VerticalAlignment.Fill
+                    minWidth: ui.sdu(8.0)
+                    preferredWidth: ui.sdu(8.0)
+                    layout: DockLayout {}
+                    
+                    // Sadece avatar yoksa harf gösterilsin
+                    Label {
+                        visible: chatType == "single" && (!avatarUrl || avatarUrl === "")
+                        text: avatarInitial
+                        textStyle.color: Color.White
+                        textStyle.fontSize: FontSize.Large
+                        horizontalAlignment: HorizontalAlignment.Center
+                        verticalAlignment: VerticalAlignment.Center
+                    }
+                    
+                    // Sadece avatar yoksa kanal ikonu gösterilsin
+                    ImageView {
+                        visible: chatType == "channel" && (!avatarUrl || avatarUrl === "")
+                        imageSource: "asset:///images/channel.png"
+                        horizontalAlignment: HorizontalAlignment.Center
+                        verticalAlignment: VerticalAlignment.Center
+                        preferredHeight:ui.sdu(6.0)                 
+                        scalingMethod:ScalingMethod.AspectFit
+                    }
+                    
+                    // Sadece avatar yoksa grup ikonu gösterilsin
+                    ImageView {
+                        visible: chatType == "group" && (!avatarUrl || avatarUrl === "")
+                        imageSource: "asset:///images/ic_group_white.png"                  
+                        scalingMethod:ScalingMethod.AspectFit
+                        horizontalAlignment: HorizontalAlignment.Center
+                        verticalAlignment: VerticalAlignment.Center
+                        preferredHeight:ui.sdu(6.0)
+                    }
+                    
+                    // İndirilen gerçek avatar resmi (Varsa en üstte bu görünür)
+                    ImageView {
+                        visible: avatarUrl !== "" && avatarUrl !== undefined
+                        imageSource: avatarUrl
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        verticalAlignment: VerticalAlignment.Fill                   
+                        scalingMethod:ScalingMethod.AspectFit
+                    }
+                    
+                    // Çerçeve / maske katmanı
+                    ImageView {
+                        id: circle
+                        imageSource: "asset:///images/wPro.png"
+                        horizontalAlignment: HorizontalAlignment.Fill
+                        verticalAlignment: VerticalAlignment.Fill
+                        filterColor: isDark ? Color.create("#282828"):Color.create("#f0f0f0")
+                        scalingMethod:ScalingMethod.AspectFit
+                        minWidth: ui.sdu(8.0)
+                        preferredWidth: ui.sdu(8.0)
+                    }
+                }
                 
                 Label {
                 text: chatPage.chatTitle
@@ -486,18 +661,7 @@ Page {
         //loadMessages();
         listView.requestFocus();
         
-        var supportedEmojis = [
-        "😀", "😁", "😂", "😃", "😄", "😅", "😆", "😉", "😊", "😋", "😎", 
-        "😍", "😘", "😗", "😙", "😚", "☺", "😐", 
-        "😑", "😶", "😏", "😣", "😥", "😮",  "😯", "😪", "😫", "😴", 
-        "😌", "😛", "😜", "😝", "😒", "😓", "😔", "😕", "😲", 
-        "👍", "👎", "👌", "✌", "👈", "👉", "👆", "👇", 
-        "☝", "✋", "👋", "👏", "🙌", "🙏", "❤", "🔥"
-        ];
-        
-        for (var i = 0; i < supportedEmojis.length; i++) {
-            emojiPickerModel.append(supportedEmojis[i]);
-        }
+        loadAllEmojis();
     }
     
     Container {
@@ -699,6 +863,79 @@ Page {
                                     id: msgContainer
                                     navigation.focusPolicy: rootMessageItem.listView.rootPage.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
                                     property string chatType: rootMessageItem.listView.chatType
+                                    property real startX: 0
+                                    
+                                    animations: [
+                                        TranslateTransition {
+                                            id: resetAnim
+                                            target: msgContainer
+                                            toX: 0.0
+                                            duration: 250
+                                        }
+                                    ]
+                                    
+                                    onTouch: {
+                                        if (event.touchType == TouchType.Down) {
+                                            resetAnim.stop();
+                                            // screenX yerine Cascades'in desteklediği localX kullanıyoruz
+                                            startX = event.localX;
+                                        } 
+                                        else if (event.touchType == TouchType.Move) {
+                                            var deltaX = event.localX - startX;
+                                            
+                                            // Sadece sola doğru çekmeye izin verelim (negatif değerler)
+                                            if (deltaX < 0) {
+                                                msgContainer.translationX = deltaX;
+                                            } else {
+                                                msgContainer.translationX = 0;
+                                            }
+                                        } 
+                                        else if (event.touchType == TouchType.Up || event.touchType == TouchType.Cancel) {
+                                            if (msgContainer.translationX < -ui.sdu(10.0) && !rootMessageItem.listView.rootPage.readOnly) {
+                                                var cLV = rootMessageItem.listView;                                            
+                                                cLV.rootPage.replyToMessageID=ListItemData.id;
+                                                var rText = ListItemData.text;
+                                                
+                                                cLV.rootPage.replySender=ListItemData.isSender ? "You":ListItemData.senderName
+                                                cLV.rootPage.isReplying=true;
+                                                if(ListItemData.type==="IMAGE"){
+                                                    var ratio=ListItemData.size ? ListItemData.size.height/ListItemData.size.width:1
+                                                    cLV.rootPage.replyAttachWidth=rootMessageItem.listView.displayWidth * 0.1;
+                                                    cLV.rootPage.replyAttachHeight=cLV.rootPage.replyAttachWidth*ratio
+                                                    cLV.rootPage.replyAttachVisible=true
+                                                    cLV.rootPage.replyAttachRatio=ratio
+                                                    if(ListItemData.localImagePath){
+                                                        cLV.rootPage.replyAttachImgUrl=ListItemData.localImagePath
+                                                    }else{
+                                                        cLV.rootPage.replyAttachImgUrl="asset:///images/ic_view_image.png"
+                                                    }                                                                     
+                                                }else if(ListItemData.type==="VIDEO"){                                               
+                                                    rText = "🎥 Video "+rText;
+                                                } else if (ListItemData.type==="AUDIO" || ListItemData.type==="VOICE") {
+                                                    rText = "🔉 Audio "+rText;
+                                                } else if (ListItemData.type==="FILE") {
+                                                    if(rText===""){
+                                                        rText = "📄  "+ListItemData.fileName;
+                                                    }else{
+                                                        rText = "📄  "+ListItemData.fileName+" : "+rText;
+                                                    }
+                                                
+                                                }  else if (ListItemData.type==="LOCATION") {
+                                                    rText = "📍 Location "+rText;
+                                                } else if (ListItemData.type==="STICKER") {
+                                                    rText = "🌞 Sticker "+rText;
+                                                }
+                                                cLV.rootPage.replyMessage=rText;
+                                                cLV.rootPage.iField.requestFocus();
+                                            }
+                                            
+                                            // Bırakınca orijinal yerine akıcı şekilde dön
+                                            resetAnim.fromX = msgContainer.translationX;
+                                            resetAnim.toX = 0.0;
+                                            resetAnim.play();
+                                        }
+                                    }
+                                    
                                     contextActions: [
                                         ActionSet {
                                             title: "Message Options"
@@ -776,6 +1013,7 @@ Page {
                                                         rText = "🌞 Sticker "+rText;
                                                     }
                                                     cLV.rootPage.replyMessage=rText;
+                                                    cLV.rootPage.iField.requestFocus();
                                                 
                                                 }
                                             }
@@ -1306,12 +1544,9 @@ Page {
                                             Label {
                                                 text: ListItemData.text
                                                 multiline: true
-                                                textStyle.fontSize: FontSize.Medium
-                                                textFormat: TextFormat.Html
+                                                textStyle.fontSize: ListItemData.text.replace(/<[^>]*>/g, '').length < 3 ? FontSize.XLarge : FontSize.Medium;                                                textFormat: TextFormat.Html
                                                 topMargin: 0;
                                                 bottomMargin: 0;
-                                                
-                                            
                                             }
                                         }
                                         // Using a Container to force the time to the bottom right
@@ -1320,21 +1555,8 @@ Page {
                                             topMargin: ui.du(0.5)
                                             
                                             layout: DockLayout {}
-                                            
-                                            /*// 1. ÖZEL PROPERTY TANIMI (Cascades bunun için otomatik geçerli bir sinyal oluşturur)
-                                             property string currentReactions: (ListItemData && ListItemData.reactionsText) ? ListItemData.reactionsText : ""
-                                             
-                                             // 2. GEÇERLİ SİNYAL: Property her değiştiğinde tetiklenir
-                                             onCurrentReactionsChanged: {
-                                             if (currentReactions !== "") {
-                                             console.log("=== [REACTION QML DEBUG] ===");
-                                             console.log("  -> Msg ID:", ListItemData.id);
-                                             console.log("  -> Emojis:", currentReactions);
-                                             }
-                                             }*/
-
-// 1. GENİŞLİK HESAPLAYICI (Görünmez Yapı)
-Container {
+                                            // 1. GENİŞLİK HESAPLAYICI (Görünmez Yapı)
+                                            Container {
                                                 opacity: 0.0
                                                 preferredHeight: 0.0
                                                 
@@ -1351,33 +1573,32 @@ Container {
                                                     text: ListItemData.timestamp ? ListItemData.timestamp : ""
                                                     textStyle.fontSize: FontSize.XSmall 
                                                 }
-}
-
-// 2. GÖRÜNÜR EMOJİLER (Sol Köşe)
-Label {
-    text: ListItemData.reactionsText ? ListItemData.reactionsText : ""
-    textStyle.fontSize: FontSize.XSmall
-    textStyle.color: Color.Gray
-    horizontalAlignment: HorizontalAlignment.Left
-    
-    visible: ListItemData.reactionsText && ListItemData.reactionsText !== ""
-}
-
-// 3. GÖRÜNÜR SAAT (Sağ Köşe)
-Label {
-    text: {if (!ListItemData.timestamp) return "";        
-            if (!ListItemData.isSender) return ListItemData.timestamp;            
-            if (ListItemData.isPending) return (ListItemData.timestamp+" ⦿");        
-            if (ListItemData.isSeen) return ListItemData.timestamp+" <span style='color: #34B7F1;'>✔</span>";        
-            return ListItemData.timestamp+" ✔";}
-    textFormat: TextFormat.Html                                 
-    textStyle.fontSize: FontSize.XSmall
-    textStyle.color: Color.Gray
-    horizontalAlignment: HorizontalAlignment.Right
-}
-
-                                        }
-                                    }
+                                            }
+                                            
+                                            // 2. GÖRÜNÜR EMOJİLER (Sol Köşe)
+                                            Label {
+                                                text: ListItemData.reactionsText ? ListItemData.reactionsText : ""
+                                                textStyle.fontSize: FontSize.XSmall
+                                                textStyle.color: Color.Gray
+                                                horizontalAlignment: HorizontalAlignment.Left
+                                                
+                                                visible: ListItemData.reactionsText && ListItemData.reactionsText !== ""
+                                            }
+                                            
+                                            // 3. GÖRÜNÜR SAAT (Sağ Köşe)
+                                            Label {
+                                                text: {if (!ListItemData.timestamp) return "";        
+                                                        if (!ListItemData.isSender) return ListItemData.timestamp;            
+                                                        if (ListItemData.isPending) return (ListItemData.timestamp+" ⦿");        
+                                                        if (ListItemData.isSeen) return ListItemData.timestamp+" <span style='color: #34B7F1;'>✔</span>";        
+                                                        return ListItemData.timestamp+" ✔";}
+                                                textFormat: TextFormat.Html                                 
+                                                textStyle.fontSize: FontSize.XSmall
+                                                textStyle.color: Color.Gray
+                                                horizontalAlignment: HorizontalAlignment.Right
+                                            }
+                                     }
+                               }
                                     
                                     // Spacer pushes their messages to the left
                                     Container {
@@ -1908,7 +2129,8 @@ Label {
                 // Native klavyenin yaklaşık kapladığı alan boyutunda sabit bir yükseklik
                 preferredHeight: ui.du(38.0)
                 
-                layout: DockLayout {
+                layout: StackLayout {
+                    orientation: LayoutOrientation.TopToBottom
                 }
                 
                 ListView {
@@ -1938,7 +2160,7 @@ Label {
                                 background: ListItem.selected || ListItem.active ? Color.create("#C0C0C0") : Color.Transparent
                                 
                                 Label {
-                                    text: ListItemData
+                                    text: ListItemData.emoji
                                     textStyle.fontSize: FontSize.XLarge
                                     horizontalAlignment: HorizontalAlignment.Center
                                     verticalAlignment: VerticalAlignment.Center
@@ -1950,10 +2172,211 @@ Label {
                     onTriggered: {
                         var selectedEmoji = dataModel.data(indexPath);
                         // Seçilen emojiyi inputField içerisindeki mevcut metnin sonuna ekle
-                        inputField.text = inputField.text + selectedEmoji;
+                        inputField.text = inputField.text + selectedEmoji.emoji;
+                    }
+                }
+                
+                Container {
+                    layout: StackLayout {
+                        orientation: LayoutOrientation.LeftToRight
+                    }
+                    id: categoryBar
+                    property string activeCategory
+                    background: isDark ? Color.create("#282828"):Color.create("#f0f0f0")
+                    bottomPadding: ui.sdu(1.0)
+                    topPadding: ui.sdu(1.0)
+                    leftPadding: ui.sdu(2.0)
+                    rightPadding: ui.sdu(2.0)
+                    // 1. Smileys & People
+                    Container {
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
+                        layout: DockLayout {}
+                        preferredHeight: ui.sdu(7.0)
+                        
+                        // Eğer aktif kategori buysa farklı, değilse şeffaf arka plan
+                        background: categoryBar.activeCategory === "Smileys & People" ? Color.create("#454545") : Color.Transparent
+                        
+                        Label {
+                            text: "😀"
+                            textStyle.fontSize: FontSize.Large
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                        }
+                        
+                        onTouch: {
+                            if (event.touchType == TouchType.Up) {
+                                categoryBar.activeCategory = "Smileys & People";
+                                filterByCategory("Smileys & People");
+                            }
+                        }
+                    }
+                    
+                    // 2. Animals & Nature
+                    Container {
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
+                        layout: DockLayout {}
+                        preferredHeight: ui.sdu(7.0)
+                        
+                        background: categoryBar.activeCategory === "Animals & Nature" ? Color.create("#454545") : Color.Transparent
+                        
+                        Label {
+                            text: "🐱"
+                            textStyle.fontSize: FontSize.Large
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                        }
+                        
+                        onTouch: {
+                            if (event.touchType == TouchType.Up) {
+                                categoryBar.activeCategory = "Animals & Nature";
+                                filterByCategory("Animals & Nature");
+                            }
+                        }
+                    }
+                    
+                    // 3. Food & Drink
+                    Container {
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
+                        layout: DockLayout {}
+                        preferredHeight: ui.sdu(7.0)
+                        
+                        background: categoryBar.activeCategory === "Food & Drink" ? Color.create("#454545") : Color.Transparent
+                        
+                        Label {
+                            text: "🍕"
+                            textStyle.fontSize: FontSize.Large
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                        }
+                        
+                        onTouch: {
+                            if (event.touchType == TouchType.Up) {
+                                categoryBar.activeCategory = "Food & Drink";
+                                filterByCategory("Food & Drink");
+                            }
+                        }
+                    }
+                    
+                    // 4. Activity
+                    Container {
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
+                        layout: DockLayout {}
+                        preferredHeight: ui.sdu(7.0)
+                        
+                        background: categoryBar.activeCategory === "Activity" ? Color.create("#454545") : Color.Transparent
+                        
+                        Label {
+                            text: "⚽"
+                            textStyle.fontSize: FontSize.Large
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                        }
+                        
+                        onTouch: {
+                            if (event.touchType == TouchType.Up) {
+                                categoryBar.activeCategory = "Activity";
+                                filterByCategory("Activity");
+                            }
+                        }
+                    }
+                    
+                    // 5. Travel & Places
+                    Container {
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
+                        layout: DockLayout {}
+                        preferredHeight: ui.sdu(7.0)
+                        
+                        background: categoryBar.activeCategory === "Travel & Places" ? Color.create("#454545") : Color.Transparent
+                        
+                        Label {
+                            text: "🚐"
+                            textStyle.fontSize: FontSize.Large
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                        }
+                        
+                        onTouch: {
+                            if (event.touchType == TouchType.Up) {
+                                categoryBar.activeCategory = "Travel & Places";
+                                filterByCategory("Travel & Places");
+                            }
+                        }
+                    }
+                    
+                    // 6. Objects
+                    Container {
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
+                        layout: DockLayout {}
+                        preferredHeight: ui.sdu(7.0)
+                        
+                        background: categoryBar.activeCategory === "Objects" ? Color.create("#454545") : Color.Transparent
+                        
+                        Label {
+                            text: "💡"
+                            textStyle.fontSize: FontSize.Large
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                        }
+                        
+                        onTouch: {
+                            if (event.touchType == TouchType.Up) {
+                                categoryBar.activeCategory = "Objects";
+                                filterByCategory("Objects");
+                            }
+                        }
+                    }
+                    
+                    // 7. Symbols
+                    Container {
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
+                        layout: DockLayout {}
+                        preferredHeight: ui.sdu(7.0)
+                        
+                        background: categoryBar.activeCategory === "Symbols" ? Color.create("#454545") : Color.Transparent
+                        
+                        Label {
+                            text: "💜"
+                            textStyle.fontSize: FontSize.Large
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                        }
+                        
+                        onTouch: {
+                            if (event.touchType == TouchType.Up) {
+                                categoryBar.activeCategory = "Symbols";
+                                filterByCategory("Symbols");
+                            }
+                        }
+                    }
+                    
+                    // 8. Flags
+                    Container {
+                        layoutProperties: StackLayoutProperties { spaceQuota: 1 }
+                        layout: DockLayout {}
+                        preferredHeight: ui.sdu(7.0)
+                        
+                        background: categoryBar.activeCategory === "Flags" ? Color.create("#454545") : Color.Transparent
+                        
+                        Label {
+                            text: "🇹🇷"
+                            textStyle.fontSize: FontSize.Large
+                            horizontalAlignment: HorizontalAlignment.Center
+                            verticalAlignment: VerticalAlignment.Center
+                        }
+                        
+                        onTouch: {
+                            if (event.touchType == TouchType.Up) {
+                                categoryBar.activeCategory = "Flags";
+                                filterByCategory("Flags");
+                            }
+                        }
                     }
                 }
             }
+        }
+        
+        Container {
+            id: chatInfo
         }
                 
     }

@@ -1,5 +1,5 @@
 1
-92
+93
 about.qml
 attach.qml
 chatUI.qml
@@ -92,3 +92,4 @@ MapPage.qml
 PhotoPreviewPage.qml
 search.qml
 settings.qml
+test.qml
