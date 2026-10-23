@@ -70,15 +70,16 @@ Page {
         "👶", "👧", "👦", "👩", "👨", "👵", "👴", "👲", "👳", "👮"
         ],
         "Animals & Nature": [
-        "🔥","🐶","🐱","🐭","🐹","🐰","🐻","🐼","🐨",
-        "🐯","🐮","🐷","🐸","🐵","🐔","🐧","🐦","🐤",
-        "🐣","🐥","🐺","🐗","🐴",
-        "🐝","🐛","🐌","🐞","🐜",
-        "🐢","🐍","🐙","🐡","🐠",
-        "🐟","🐬","🐊","🐅","🐆","🐘",
-        "🐪","🐫","🐃","🐄","🐎","🐖","🐏","🐑",
-        "🐐","🐕","🐩","🐈","🐓","🌲","🌳","🌴",
-        "🌵","🌽","🌿","☘","🍀","🍁","🍂","🍄"
+        "🔥", "🐶", "🐱", "🐭", "🐹", "🐰", "🐻", "🐼", "🐨",
+        "🐯", "🐮", "🐷", "🐸", "🐵", "🐔", "🐧", "🐦", "🐤",
+        "🐣", "🐥", "🐺", "🐗", "🐴",
+        "🐝", "🐛", "🐌", "🐞", "🐜",
+        "🐢", "🐍", "🐙", "🐡", "🐠",
+        "🐟", "🐬", "🐊", "🐅", "🐆", "🐘",
+        "🐪", "🐫", "🐃", "🐄", "🐎", "🐖", "🐏", "🐑",
+        "🐐", "🐕", "🐩", "🐈", "🐓", "🌲", "🌳", "🌴",
+        "🌵", "🌽", "🌿", "🌸", "💮", "🌹", "🌺", "🌻", "🌼", "🌷", "💐", 
+        "☘", "🍀", "🍁", "🍂", "🍄"
         ],
         "Food & Drink": [
         "🍏","🍎","🍐","🍊","🍋","🍌","🍉","🍇","🍓","🍈",
@@ -90,10 +91,18 @@ Page {
         "🍷","🍸","🍹","🍺","🍻","🍴","🔪"
         ],
         "Activity": [
-        "⚽","🏀","🏈","⚾","🎾","🏉","🎱",
-        "⛳","🎣","🎿","🏆","🎫🎪","🎨","🎰",
-        "🎲","♟","🃏","🀄","🎴"
-        ],
+        "⚽", "🏀", "🏈", "⚾", "🎾",
+        "🏉", "🎱",
+        "⛳", "🎣",
+        "🎿", "⛷", "🏂",
+         "🏇", "🏄", "🏊", "🚣",
+         "🚴", "🚵", "🏆",
+         "🎫", "🎪", "🎭", "🎨",
+         "🎬", "🎤", "🎧", "🎼", "🎹", "🎷",
+         "🎺", "🎸", "🎻", "🎲", "♟", "🎯",
+         "🎳", "🎮", "🎰",
+         "🃏", "🀄", "🎴"
+         ],
         "Travel & Places": [
         "🚗","🚕","🚙","🚌","🚎","🚓","🚑","🚒","🚐",
         "🚚","🚛","🚜","🚲","🚨","🚔","🚍",
@@ -125,10 +134,17 @@ Page {
         "✴","❇","💱","💲","©","®","™"
         ],
         "Flags": [
-        "🏁","🚩","🎌","‍🌈‍","☠️",
-        "🇹🇷","🇺🇸","🇬🇧","🇩🇪","🇫🇷","🇮🇹","🇪🇸","🇷🇺","🇯🇵",
-            "🇰🇷","🇨🇦","🇦🇺","🇧🇷","🇮🇳","🇨🇳","🇸🇦","🇦🇿","🇳🇱",
-            "🇸🇪","🇨🇭","🇮🇷","🇬🇷","🇪🇬","🇵🇰","🇦🇷","🇲🇽","🇪🇺"
+        "🏁", "🚩", "🎌",
+        "🇹🇷", "🇦🇷", "🇦🇺",
+        "🇦🇹", "🇦🇿", "🇧🇪", "🇧🇷", "🇧🇬", "🇨🇦", "🇨🇱",
+        "🇨🇳", "🇨🇴", "🇭🇷", "🇨🇺", "🇨🇿", "🇩🇰", "🇩🇯",
+        "🇪🇬", "🇪🇸", "🇫🇷", "🇩🇪", "🇬🇷", "🇭🇺", "🇮🇳",
+        "🇮🇪", "🇮🇩", "🇮🇷", "🇮🇶", "🇮🇹", "🇯🇵", "🇯🇴",
+        "🇰🇼", "🇱🇧", "🇲🇾", "🇲🇽", "🇲🇦", "🇳🇱", "🇳🇿",
+        "🇳🇴", "🇵🇰", "🇵🇸", "🇵🇪", "🇵🇱", "🇵🇹", "🇶🇦",
+        "🇷🇴", "🇷🇺", "🇷🇸", "🇸🇦", "🇸🇬", "🇿🇦", "🇰🇷",
+        "🇸🇪", "🇨🇭", "🇸🇾", "🇹🇼", "🇹🇭", "🇹🇳", 
+        "🇺🇦", "🇬🇧", "🇺🇸", "🇻🇪", "🇻🇳"
         ]
     }
     
@@ -577,16 +593,17 @@ Page {
                 layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
                 leftPadding: ui.sdu(2.0)
                 rightPadding: ui.sdu(2.0)
-                topPadding: ui.sdu(0.8)
-                bottomPadding: ui.sdu(0.8)
+                topMargin: ui.sdu(0.8)
+                bottomMargin: ui.sdu(0.8)
+                verticalAlignment: VerticalAlignment.Fill
                 Container {
+                    visible: !isSearchMode
                     // Profil resmi arka planı primary color olsun
                     background: Color.create(avatarColor)
-                    verticalAlignment: VerticalAlignment.Fill
                     minWidth: ui.sdu(8.0)
                     preferredWidth: ui.sdu(8.0)
                     layout: DockLayout {}
-                    
+                    verticalAlignment: VerticalAlignment.Center
                     // Sadece avatar yoksa harf gösterilsin
                     Label {
                         visible: chatType == "single" && (!avatarUrl || avatarUrl === "")
@@ -621,17 +638,19 @@ Page {
                     ImageView {
                         visible: avatarUrl !== "" && avatarUrl !== undefined
                         imageSource: avatarUrl
-                        horizontalAlignment: HorizontalAlignment.Fill
-                        verticalAlignment: VerticalAlignment.Fill                   
+                        horizontalAlignment: HorizontalAlignment.Center
+                        verticalAlignment: VerticalAlignment.Center                   
                         scalingMethod:ScalingMethod.AspectFit
+                        minWidth: ui.sdu(8.0)
+                        preferredWidth: ui.sdu(8.0)
                     }
                     
                     // Çerçeve / maske katmanı
                     ImageView {
                         id: circle
                         imageSource: "asset:///images/wPro.png"
-                        horizontalAlignment: HorizontalAlignment.Fill
-                        verticalAlignment: VerticalAlignment.Fill
+                        horizontalAlignment: HorizontalAlignment.Center
+                        verticalAlignment: VerticalAlignment.Center
                         filterColor: isDark ? Color.create("#282828"):Color.create("#f0f0f0")
                         scalingMethod:ScalingMethod.AspectFit
                         minWidth: ui.sdu(8.0)
@@ -954,9 +973,10 @@ Page {
                                             
                                             ActionItem {
                                                 property string upperType: ListItemData.type ? ListItemData.type.toString().toUpperCase() : ""
+                                                property bool isSearch: rootMessageItem.listView.rootPage.isSearchMode
                                                 title: "Edit"
                                                 imageSource:"asset:///images/ic_edit.png"
-                                                enabled:ListItemData.isSender && ListItemData.type.toString().toUpperCase()=="TEXT"
+                                                enabled:!isSearch && ListItemData.isSender && ListItemData.type.toString().toUpperCase()=="TEXT"
                                                 onTriggered: {
                                                     var cLV = rootMessageItem.listView;
                                                     cLV.opacity=0.1;
@@ -976,7 +996,8 @@ Page {
                                                 title: "Reply"
                                                 imageSource:"asset:///images/ic_reply.png"
                                                 property bool canReply: rootMessageItem.listView.rootPage.readOnly
-                                                enabled: !canReply
+                                                property bool isSearch: rootMessageItem.listView.rootPage.isSearchMode
+                                                enabled: !isSearch && !canReply
                                                 
                                                 onTriggered: {
                                                     var cLV = rootMessageItem.listView;                                            
@@ -1023,11 +1044,12 @@ Page {
                                                 // (ListItemData.myReaction veritabanından gelen kendi emojinizdir, örn: "👍")
                                                 property string userReaction: (ListItemData && ListItemData.myReaction) ? ListItemData.myReaction : ""
                                                 property bool canReact: rootMessageItem.listView.rootPage.readOnly
+                                                property bool isSearch: rootMessageItem.listView.rootPage.isSearchMode
                                                 
                                                 // 2. DİNAMİK BAŞLIK VE İKON
                                                 title: userReaction !== "" ? "Remove " + userReaction : "React"
-                                                imageSource: userReaction !== "" ? "asset:///images/ic_cancel.png" : "asset:///images/ic_emoji.png"
-                                                enabled: !canReact
+                                                imageSource: userReaction !== "" ? "asset:///images/ic_cancel.png" : "asset:///images/smile.png"
+                                                enabled: !isSearch && !canReact
                                                 
                                                 // 3. DİNAMİK TETİKLENME (Tıklandığında Ne Yapılacak?)
                                                 onTriggered: {
@@ -1699,7 +1721,7 @@ Page {
                 // 1. Emoji Button
                 ImageButton {
                     // Çekmece açıksa klavye ikonuna, kapalıysa emoji ikonuna dönüştür
-                    defaultImageSource: chatPage.isEmojiPickerVisible ? isDark?"asset:///images/ic_keyboard.png":"asset:///images/ic_keyboard_dark.png" : "asset:///images/ic_emoji.png"
+                    defaultImageSource: chatPage.isEmojiPickerVisible ? isDark?"asset:///images/ic_keyboard.png":"asset:///images/ic_keyboard_dark.png" : isDark?"asset:///images/emoji.png":"asset:///images/emoji_dark.png"
                     verticalAlignment: VerticalAlignment.Center
                     preferredWidth: ui.du(8.0)
                     preferredHeight: ui.du(8.0)
@@ -2127,7 +2149,7 @@ Page {
                 visible: chatPage.isEmojiPickerVisible
                 horizontalAlignment: HorizontalAlignment.Fill
                 // Native klavyenin yaklaşık kapladığı alan boyutunda sabit bir yükseklik
-                preferredHeight: ui.du(38.0)
+                preferredHeight: ui.sdu(43.0)
                 
                 layout: StackLayout {
                     orientation: LayoutOrientation.TopToBottom
@@ -2194,21 +2216,23 @@ Page {
                         preferredHeight: ui.sdu(7.0)
                         
                         // Eğer aktif kategori buysa farklı, değilse şeffaf arka plan
-                        background: categoryBar.activeCategory === "Smileys & People" ? Color.create("#454545") : Color.Transparent
+                        //background: categoryBar.activeCategory === "Smileys & People" ? Color.create("#454545") : Color.Transparent
                         
-                        Label {
-                            text: "😀"
-                            textStyle.fontSize: FontSize.Large
+                        ImageView {
+                            imageSource: "asset:///images/smile.png"
                             horizontalAlignment: HorizontalAlignment.Center
                             verticalAlignment: VerticalAlignment.Center
-                        }
-                        
-                        onTouch: {
-                            if (event.touchType == TouchType.Up) {
-                                categoryBar.activeCategory = "Smileys & People";
-                                filterByCategory("Smileys & People");
+                            filterColor: categoryBar.activeCategory === "Smileys & People" ? Color.create(primaryColor) : isDark ? undefined : Color.create("#282828")
+                            scalingMethod: ScalingMethod.AspectFit
+                            onTouch: {
+                                if (event.touchType == TouchType.Up) {
+                                    categoryBar.activeCategory = "Smileys & People";
+                                    filterByCategory("Smileys & People");
+                                }
                             }
                         }
+                        
+                        
                     }
                     
                     // 2. Animals & Nature
@@ -2217,19 +2241,19 @@ Page {
                         layout: DockLayout {}
                         preferredHeight: ui.sdu(7.0)
                         
-                        background: categoryBar.activeCategory === "Animals & Nature" ? Color.create("#454545") : Color.Transparent
+                        //background: categoryBar.activeCategory === "Animals & Nature" ? Color.create("#454545") : Color.Transparent
                         
-                        Label {
-                            text: "🐱"
-                            textStyle.fontSize: FontSize.Large
+                        ImageView {
+                            imageSource: "asset:///images/nature.png"
                             horizontalAlignment: HorizontalAlignment.Center
                             verticalAlignment: VerticalAlignment.Center
-                        }
-                        
-                        onTouch: {
-                            if (event.touchType == TouchType.Up) {
-                                categoryBar.activeCategory = "Animals & Nature";
-                                filterByCategory("Animals & Nature");
+                            filterColor: categoryBar.activeCategory === "Animals & Nature" ? Color.create(primaryColor) : isDark ? undefined : Color.create("#282828")
+                            scalingMethod: ScalingMethod.AspectFit
+                            onTouch: {
+                                if (event.touchType == TouchType.Up) {
+                                    categoryBar.activeCategory = "Animals & Nature";
+                                    filterByCategory("Animals & Nature");
+                                }
                             }
                         }
                     }
@@ -2240,19 +2264,19 @@ Page {
                         layout: DockLayout {}
                         preferredHeight: ui.sdu(7.0)
                         
-                        background: categoryBar.activeCategory === "Food & Drink" ? Color.create("#454545") : Color.Transparent
+                        //background: categoryBar.activeCategory === "Food & Drink" ? Color.create("#454545") : Color.Transparent
                         
-                        Label {
-                            text: "🍕"
-                            textStyle.fontSize: FontSize.Large
+                        ImageView {
+                            imageSource: "asset:///images/food.png"
                             horizontalAlignment: HorizontalAlignment.Center
                             verticalAlignment: VerticalAlignment.Center
-                        }
-                        
-                        onTouch: {
-                            if (event.touchType == TouchType.Up) {
-                                categoryBar.activeCategory = "Food & Drink";
-                                filterByCategory("Food & Drink");
+                            filterColor: categoryBar.activeCategory === "Food & Drink" ? Color.create(primaryColor) : isDark ? undefined : Color.create("#282828")
+                            scalingMethod: ScalingMethod.AspectFit
+                            onTouch: {
+                                if (event.touchType == TouchType.Up) {
+                                    categoryBar.activeCategory = "Food & Drink";
+                                    filterByCategory("Food & Drink");
+                                }
                             }
                         }
                     }
@@ -2263,19 +2287,19 @@ Page {
                         layout: DockLayout {}
                         preferredHeight: ui.sdu(7.0)
                         
-                        background: categoryBar.activeCategory === "Activity" ? Color.create("#454545") : Color.Transparent
+                        //background: categoryBar.activeCategory === "Activity" ? Color.create("#454545") : Color.Transparent
                         
-                        Label {
-                            text: "⚽"
-                            textStyle.fontSize: FontSize.Large
+                        ImageView {
+                            imageSource: "asset:///images/activity.png"
                             horizontalAlignment: HorizontalAlignment.Center
                             verticalAlignment: VerticalAlignment.Center
-                        }
-                        
-                        onTouch: {
-                            if (event.touchType == TouchType.Up) {
-                                categoryBar.activeCategory = "Activity";
-                                filterByCategory("Activity");
+                            filterColor: categoryBar.activeCategory === "Activity" ? Color.create(primaryColor) : isDark ? undefined : Color.create("#282828")
+                            scalingMethod: ScalingMethod.AspectFit
+                            onTouch: {
+                                if (event.touchType == TouchType.Up) {
+                                    categoryBar.activeCategory = "Activity";
+                                    filterByCategory("Activity");
+                                }
                             }
                         }
                     }
@@ -2286,19 +2310,19 @@ Page {
                         layout: DockLayout {}
                         preferredHeight: ui.sdu(7.0)
                         
-                        background: categoryBar.activeCategory === "Travel & Places" ? Color.create("#454545") : Color.Transparent
+                        //background: categoryBar.activeCategory === "Travel & Places" ? Color.create("#454545") : Color.Transparent
                         
-                        Label {
-                            text: "🚐"
-                            textStyle.fontSize: FontSize.Large
+                        ImageView {
+                            imageSource: "asset:///images/travel.png"
                             horizontalAlignment: HorizontalAlignment.Center
                             verticalAlignment: VerticalAlignment.Center
-                        }
-                        
-                        onTouch: {
-                            if (event.touchType == TouchType.Up) {
-                                categoryBar.activeCategory = "Travel & Places";
-                                filterByCategory("Travel & Places");
+                            filterColor: categoryBar.activeCategory === "Travel & Places" ? Color.create(primaryColor) : isDark ? undefined : Color.create("#282828")
+                            scalingMethod: ScalingMethod.AspectFit
+                            onTouch: {
+                                if (event.touchType == TouchType.Up) {
+                                    categoryBar.activeCategory = "Travel & Places";
+                                    filterByCategory("Travel & Places");
+                                }
                             }
                         }
                     }
@@ -2309,19 +2333,19 @@ Page {
                         layout: DockLayout {}
                         preferredHeight: ui.sdu(7.0)
                         
-                        background: categoryBar.activeCategory === "Objects" ? Color.create("#454545") : Color.Transparent
+                        //background: categoryBar.activeCategory === "Objects" ? Color.create("#454545") : Color.Transparent
                         
-                        Label {
-                            text: "💡"
-                            textStyle.fontSize: FontSize.Large
+                        ImageView {
+                            imageSource: "asset:///images/objects.png"
                             horizontalAlignment: HorizontalAlignment.Center
                             verticalAlignment: VerticalAlignment.Center
-                        }
-                        
-                        onTouch: {
-                            if (event.touchType == TouchType.Up) {
-                                categoryBar.activeCategory = "Objects";
-                                filterByCategory("Objects");
+                            filterColor: categoryBar.activeCategory === "Objects" ? Color.create(primaryColor) : isDark ? undefined : Color.create("#282828")
+                            scalingMethod: ScalingMethod.AspectFit
+                            onTouch: {
+                                if (event.touchType == TouchType.Up) {
+                                    categoryBar.activeCategory = "Objects";
+                                    filterByCategory("Objects");
+                                }
                             }
                         }
                     }
@@ -2332,19 +2356,19 @@ Page {
                         layout: DockLayout {}
                         preferredHeight: ui.sdu(7.0)
                         
-                        background: categoryBar.activeCategory === "Symbols" ? Color.create("#454545") : Color.Transparent
+                        //background: categoryBar.activeCategory === "Symbols" ? Color.create("#454545") : Color.Transparent
                         
-                        Label {
-                            text: "💜"
-                            textStyle.fontSize: FontSize.Large
+                        ImageView {
+                            imageSource: "asset:///images/symbols.png"
                             horizontalAlignment: HorizontalAlignment.Center
                             verticalAlignment: VerticalAlignment.Center
-                        }
-                        
-                        onTouch: {
-                            if (event.touchType == TouchType.Up) {
-                                categoryBar.activeCategory = "Symbols";
-                                filterByCategory("Symbols");
+                            filterColor: categoryBar.activeCategory === "Symbols" ? Color.create(primaryColor) : isDark ? undefined : Color.create("#282828")
+                            scalingMethod: ScalingMethod.AspectFit
+                            onTouch: {
+                                if (event.touchType == TouchType.Up) {
+                                    categoryBar.activeCategory = "Symbols";
+                                    filterByCategory("Symbols");
+                                }
                             }
                         }
                     }
@@ -2355,19 +2379,19 @@ Page {
                         layout: DockLayout {}
                         preferredHeight: ui.sdu(7.0)
                         
-                        background: categoryBar.activeCategory === "Flags" ? Color.create("#454545") : Color.Transparent
+                        //background: categoryBar.activeCategory === "Flags" ? Color.create("#454545") : Color.Transparent
                         
-                        Label {
-                            text: "🇹🇷"
-                            textStyle.fontSize: FontSize.Large
+                        ImageView {
+                            imageSource: "asset:///images/flag.png"
                             horizontalAlignment: HorizontalAlignment.Center
                             verticalAlignment: VerticalAlignment.Center
-                        }
-                        
-                        onTouch: {
-                            if (event.touchType == TouchType.Up) {
-                                categoryBar.activeCategory = "Flags";
-                                filterByCategory("Flags");
+                            filterColor: categoryBar.activeCategory === "Flags" ? Color.create(primaryColor) : isDark ? undefined : Color.create("#282828")
+                            scalingMethod: ScalingMethod.AspectFit
+                            onTouch: {
+                                if (event.touchType == TouchType.Up) {
+                                    categoryBar.activeCategory = "Flags";
+                                    filterByCategory("Flags");
+                                }
                             }
                         }
                     }

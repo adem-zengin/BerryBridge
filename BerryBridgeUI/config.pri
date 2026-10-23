@@ -57,13 +57,18 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/html/leaflet.js.map) \
         $$quote($$BASEDIR/assets/html/leaflet_js.txt) \
         $$quote($$BASEDIR/assets/html/map.html) \
+        $$quote($$BASEDIR/assets/images/activity.png) \
         $$quote($$BASEDIR/assets/images/bPro.png) \
         $$quote($$BASEDIR/assets/images/channel.png) \
         $$quote($$BASEDIR/assets/images/discord.png) \
         $$quote($$BASEDIR/assets/images/doubleTick.png) \
         $$quote($$BASEDIR/assets/images/download.png) \
         $$quote($$BASEDIR/assets/images/download2.png) \
+        $$quote($$BASEDIR/assets/images/emoji.png) \
+        $$quote($$BASEDIR/assets/images/emoji_dark.png) \
         $$quote($$BASEDIR/assets/images/facebook.png) \
+        $$quote($$BASEDIR/assets/images/flag.png) \
+        $$quote($$BASEDIR/assets/images/food.png) \
         $$quote($$BASEDIR/assets/images/googlechat.png) \
         $$quote($$BASEDIR/assets/images/googlemessages.png) \
         $$quote($$BASEDIR/assets/images/ic_attach.png) \
@@ -112,11 +117,16 @@ config_pri_assets {
         $$quote($$BASEDIR/assets/images/linkedin.png) \
         $$quote($$BASEDIR/assets/images/matrix.png) \
         $$quote($$BASEDIR/assets/images/mute.png) \
+        $$quote($$BASEDIR/assets/images/nature.png) \
+        $$quote($$BASEDIR/assets/images/objects.png) \
         $$quote($$BASEDIR/assets/images/pin.png) \
         $$quote($$BASEDIR/assets/images/read.png) \
         $$quote($$BASEDIR/assets/images/signal.png) \
         $$quote($$BASEDIR/assets/images/slack.png) \
+        $$quote($$BASEDIR/assets/images/smile.png) \
+        $$quote($$BASEDIR/assets/images/symbols.png) \
         $$quote($$BASEDIR/assets/images/telegram.png) \
+        $$quote($$BASEDIR/assets/images/travel.png) \
         $$quote($$BASEDIR/assets/images/tumblr.png) \
         $$quote($$BASEDIR/assets/images/unmute.png) \
         $$quote($$BASEDIR/assets/images/unpin.png) \

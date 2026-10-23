@@ -1,5 +1,5 @@
 1
-93
+102
 about.qml
 attach.qml
 chatUI.qml
@@ -19,13 +19,18 @@ html/leaflet.css
 html/leaflet.js.map
 html/leaflet_js.txt
 html/map.html
+images/activity.png
 images/bPro.png
 images/channel.png
 images/discord.png
 images/doubleTick.png
 images/download.png
 images/download2.png
+images/emoji.png
+images/emoji_dark.png
 images/facebook.png
+images/flag.png
+images/food.png
 images/googlechat.png
 images/googlemessages.png
 images/icon.png
@@ -74,11 +79,16 @@ images/line.png
 images/linkedin.png
 images/matrix.png
 images/mute.png
+images/nature.png
+images/objects.png
 images/pin.png
 images/read.png
 images/signal.png
 images/slack.png
+images/smile.png
+images/symbols.png
 images/telegram.png
+images/travel.png
 images/tumblr.png
 images/unmute.png
 images/unpin.png
@@ -92,4 +102,3 @@ MapPage.qml
 PhotoPreviewPage.qml
 search.qml
 settings.qml
-test.qml

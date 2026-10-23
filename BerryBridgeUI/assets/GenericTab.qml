@@ -47,6 +47,10 @@ Tab {
         dat.avatarDownloaded.connect(genericTab.updateChatAvatar);
     }
     
+    function cleanup() {
+        dat.avatarDownloaded.disconnect(genericTab.updateChatAvatar);
+    }
+    
     attachedObjects: [
         ArrayDataModel {
             id: internalModel
@@ -580,8 +584,9 @@ Tab {
                             
                             Container {
                                 horizontalAlignment: HorizontalAlignment.Fill
+                                verticalAlignment: VerticalAlignment.Fill
                                 topPadding: ui.sdu(2.0)
-                                bottomPadding: ui.sdu(2.0)
+                                bottomPadding: ui.sdu(6.0)
                                 layout: DockLayout {}
                                 
                                 Button {
@@ -606,7 +611,7 @@ Tab {
                         CustomListItem {
                             dividerVisible: false
                             //highlightAppearance: HighlightAppearance.None
-                            navigation.focusPolicy: itemRoot.ListItem.view.rootTab.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default                         
+                            navigation.focusPolicy: itemRoot.ListItem.view.rootTab.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : undefined                        
                             id: itemRoot
                             
                             onFocusedChanged: {
@@ -710,7 +715,7 @@ Tab {
                             Container {
                                 layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
                                 leftPadding: ui.sdu(2.0); rightPadding: ui.sdu(2.0); topPadding: ui.sdu(3.0); bottomPadding: ui.sdu(3.0)
-                                navigation.focusPolicy: itemRoot.ListItem.view.rootTab.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : NavigationFocusPolicy.Default
+                                navigation.focusPolicy: itemRoot.ListItem.view.rootTab.disableTrackpadFocus ? NavigationFocusPolicy.NotFocusable : undefined
 
                                 
                                 Container {
@@ -895,9 +900,6 @@ Tab {
                     
                     Container {
                         preferredWidth: ui.sdu(50.0)
-                        preferredHeight: ui.sdu(50.0)
-                        // Profil resmi arka planı primary color olsun
-                        background: darkenColor(primaryColor, 90)
                         verticalAlignment: VerticalAlignment.Center
                         layout: DockLayout {}
                         
@@ -940,13 +942,16 @@ Tab {
                                 verticalAlignment: VerticalAlignment.Center
                                 textStyle.fontWeight: FontWeight.W500
                                 textStyle.color: Color.White
-                                textStyle.textAlign: TextAlign.Left                               
+                                textStyle.textAlign: TextAlign.Left 
+                                leftMargin: 0
+                                rightMargin: 0                              
                             }
                             Container {
                                 layoutProperties: StackLayoutProperties { spaceQuota: 1.0 }
+
                             }
                             Container {
-                                minWidth: ui.sdu(3.0)
+                                minWidth: ui.sdu(4.0)
                                 Label {
                                     text: "✖ "
                                     textStyle.color: Color.White

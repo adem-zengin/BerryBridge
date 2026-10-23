@@ -12,8 +12,46 @@ Page {
     property string chatBgColor: "#E5DDD5"
     property string bubbleColor: "#d8fdd2"
     property bool darkTheme
+    property bool hasResults: false // Arama sonuçlarının gelip gelmediğini takip eden bayrak
     
-    function onChatCreatedSuccessHandler(responseJson) {
+    function darkenColor(hexStr, amount) {
+        if (!hexStr || hexStr.indexOf("#") !== 0) return "#333333"; // Güvenlifallback
+        var num = parseInt(hexStr.replace("#", ""), 16);
+        var r = Math.max(0, (num >> 16) - amount);
+        var g = Math.max(0, ((num >> 8) & 0x00FF) - amount);
+        var b = Math.max(0, (num & 0x0000FF) - amount);
+        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+    }
+    
+    function onAvatarDownloaded(id, localUrl) {  
+        // 1. Ana grup sayısını alıyoruz (childCount içine boş dizi verilir)
+        var groupCount = contactModel.childCount([]);
+        
+        // 2. Grupları dönüyoruz
+        for (var g = 0; g < groupCount; g++) {
+            // O gruptaki eleman sayısını alıyoruz
+            var itemCount = contactModel.childCount([g]);
+            
+            // 3. Grubun içindeki elemanları dönüyoruz
+            for (var item = 0; item < itemCount; item++) {
+                var indexPath = [g, item]; // GroupDataModel'in konum yolu (IndexPath)
+                var currentData = contactModel.data(indexPath);
+                
+                // ID eşleşmesini kontrol ediyoruz
+                if (currentData.id === id) {
+                    // Veriyi güncelliyoruz
+                    currentData.avatarUrl = localUrl;
+                    
+                    // GroupDataModel'deki elemanı bu indexPath ile güncelliyoruz
+                    contactModel.updateItem(indexPath, currentData);
+                    console.log("GroupDataModel içinde avatar güncellendi, ID:", id);
+                    return;
+                }
+            }
+        }
+    }
+    
+    function onChatCreatedSuccessHandler(responseJson, avatar) {
         console.log("Sohbet başarıyla oluşturuldu: " + responseJson);
         
         var chatID = "";
@@ -35,7 +73,7 @@ Page {
         
         // 3. Bulduğumuz ID ile sayfayı açıyoruz
         if (chatID !== "") {
-            openChatPage(pendingChatName, chatID, "single");
+            openChatPage(pendingChatName, chatID, "single", avatar, false);
         } else {
             console.log("Hata: Sohbet oluşturuldu fakat Chat ID tespit edilemedi.");
         }
@@ -60,41 +98,122 @@ Page {
         chatErrorDialog.show();
     }
     
-    onAccountIDChanged: {
-        console.log("[CONTACTS] accountID set to: " + accountID);
+    function onSearchContactsFinished() {
+        contactModel.clear();
         refreshContacts(searchField.text, accountID);
+        errorCont.visible= false;
     }
     
-    titleBar: TitleBar {
-        title: "Contacts & Groups"
-        scrollBehavior: TitleBarScrollBehavior.Sticky
-        dismissAction: ActionItem {
-            title: "Cancel"
-            onTriggered: { navigationPane.pop(); }
-        }
+    function onSearchContactsError(errorString) {
+        contactModel.clear();
+        refreshContacts(searchField.text, accountID);
+        errorLabel.text= errorString;
+        errorCont.visible= true;
+    }
+    
+    onAccountIDChanged: {
+        initializeContacts(accountID);
     }
     
     Container {
         layout: StackLayout {}
-        topPadding: 20.0; leftPadding: 20.0; rightPadding: 20.0
+        topPadding: ui.du(2.0); bottomPadding: ui.du(2.0)
+        leftPadding: ui.du(2.0); rightPadding: ui.du(2.0)
         
         TextField {
             id: searchField
-            hintText: "Search everyone..."
-            onTextChanging: {
-                refreshContacts(text, accountID);
+            hintText: "Search contacts, groups and channels"
+            input.submitKey: SubmitKey.Search
+            input.onSubmitted: {
+                if (text.trim() === "") {
+                    contactModel.clear();
+                    initializeContacts(accountID);
+                    hasResults = false;
+                    filterCont.visible = false;
+                    return;
+                }else{
+                    filterCont.visible = true;
+                }
+                statusCont.visible= false;
+                errorCont.visible= false;
+                searchAct.running = true;
+                contactModel.clear();
+                dat.searchContacts(accountID, "", text);              
+            }
+
+        }
+        
+        
+        Container {
+            id: filterCont  
+            visible: false
+            SegmentedControl {
+                id: filterControl               
+                onSelectedOptionChanged: {
+                    if (searchField.text.trim() !== "") {
+                        refreshContacts(searchField.text, accountID);
+                    }
+                }
+                options: [
+                    Option {
+                        text: "All"
+                        selected: true
+                    },
+                    Option {
+                        text: "Local"
+                    },
+                    Option {
+                        text: "Account"
+                    }
+                ]
             }
         }
+        
+        ActivityIndicator {
+            id: searchAct
+            running: false
+            minHeight: ui.du(8.0)     
+            horizontalAlignment: HorizontalAlignment.Center
+            topMargin: ui.sdu(3.0)
+        }
+        
+        Container {
+            id: statusCont
+            visible: false
+            horizontalAlignment: HorizontalAlignment.Fill
+            topPadding: ui.sdu(2.0)
+            Label {
+                id: statusLabel
+                horizontalAlignment: HorizontalAlignment.Fill
+                text: "No results found"
+                textStyle.textAlign: TextAlign.Center
+                multiline: true
+            }
+        }
+        
+        Container {
+            id: errorCont
+            visible: false
+            horizontalAlignment: HorizontalAlignment.Fill
+            background: Color.Red
+            Label {
+                id: errorLabel
+                horizontalAlignment: HorizontalAlignment.Fill
+                textStyle.textAlign: TextAlign.Center
+                multiline: true
+                textStyle.color: Color.White
+            }
+        }
+        
         
         ListView {
             id: contactsList
             property variant rootPage: contactsPage  
             dataModel: contactModel
-            topMargin: 20.0
             onTriggered: {
                 var selectedItem = dataModel.data(indexPath);
                 if (selectedItem.type === "group") {
-                    openChatPage(selectedItem.displayName, selectedItem.id, "group");
+                    openChatPage(selectedItem.displayName, selectedItem.id, "group", selectedItem.avatarUrl, selectedItem.isReadOnly);
                     return;
                 }
                 
@@ -112,7 +231,7 @@ Page {
                     }
                 } 
                 
-                // 2. Varsa tüm e-posta adreslerini de AYNı diziye ekle
+                // 2. Varsa tüm e-posta adreslerini de AYNI diziye ekle
                 if (selectedItem.emails && selectedItem.emails.toString().trim() !== "") {
                     var eList = selectedItem.emails.toString().split(",");
                     for (var j = 0; j < eList.length; j++) {
@@ -125,41 +244,29 @@ Page {
                 
                 // 3. Toplam iletişim adresi sayısına göre karar ver
                 if (contactMethods.length > 1) {
-                    // Kişinin birden fazla iletişim adresi var (Örn: 2 tel, veya 1 tel + 1 email, veya 3 email)
                     var sheet = phoneSheetDefinition.createObject();
-                    
-                    // Mevcut numbersArray değişkenine birleştirilmiş listeyi gönderiyoruz 
-                    // (İçinde hem telefon hem email listelenecek)
-                    sheet.numbersArray = contactMethods; 
+                    sheet.numbersArray = contactMethods;
+                    sheet.avatar = selectedItem.avatarUrl; 
                     sheet.contactName = selectedItem.displayName;
                     sheet.numberSelected.connect(processDirectChat);
                     sheet.open();
                 } 
                 else if (contactMethods.length === 1) {
-                    // Kişinin sadece tek bir iletişim bilgisi var (Sadece 1 tel VEYA sadece 1 email)
-                    processDirectChat(selectedItem.displayName, contactMethods[0]);
+                    processDirectChat(selectedItem.displayName, contactMethods[0], selectedItem.avatarUrl);
                 } 
                 else {
-                    // Kişiye ait hiçbir iletişim verisi yok
                     console.log("Hata: Kişinin geçerli bir numarası veya e-postası yok.");
                 }
             }
             
-            // Yardımcı Fonksiyon: Numarayı sorgula ve odayı aç
-            function processDirectChat(name, phone) {
+            function processDirectChat(name, phone, avatar) {
                 var foundId = dat.searchChatByPhone(phone, accountID);
                 if (foundId !== "") {
-                    openChatPage(name, foundId, "single");
+                    openChatPage(name, foundId, "single", avatar, false);
                 } else {                 
-                    // Sinyal geldiğinde hatırlamak için bilgileri yukarıdaki değişkenlere kilitliyoruz
                     pendingChatName = name;
                     pendingChatPhone = phone;
-                    
-                    // C++ tarafındaki fonksiyonu tetikliyoruz
-                    dat.createChat(accountID, phone, "single");
-                    
-                    // NOT: Eski koddaki processDirectChat(name, phone) satırı 
-                    // sonsuz döngü yaratıyordu, asenkron mimaride burası boş bırakılmalıdır.
+                    dat.createChat(accountID, phone, "single", avatar);
                 }
             }
             
@@ -170,12 +277,10 @@ Page {
                         id: itemRoot
                         title: ListItemData.displayName
                         description: {
-                            // 1. Önce gelen verinin bir grup olup olmadığını kontrol ediyoruz
                             if (ListItemData.type === "group") {
                                 return "Group Chat";
                             }
                             
-                            // 2. Grup değilse, sizin yazdığınız kişi numarası/e-posta mantığı çalışıyor
                             var desc = "";
                             if (ListItemData.number && ListItemData.number.toString().trim() !== "") {
                                 desc = ListItemData.number.toString().split(",")[0].trim(); 
@@ -185,11 +290,19 @@ Page {
                             return desc;
                         }
                         
-                        imageSource: ListItemData.type === "group" ? itemRoot.ListItem.view.rootPage.darkTheme? "asset:///images/ic_group.png" : "asset:///images/ic_group_dark.png" : itemRoot.ListItem.view.rootPage.darkTheme? "asset:///images/ic_contact.png" : "asset:///images/ic_contact_dark.png"
+                        imageSource: {
+                            if (ListItemData.avatarUrl && ListItemData.avatarUrl !== "") {
+                                return ListItemData.avatarUrl;
+                            }
+                            var isDark = itemRoot.ListItem.view.rootPage.darkTheme;
+                            return ListItemData.type === "group" 
+                            ? (isDark ? "asset:///images/ic_group.png" : "asset:///images/ic_group_dark.png")
+                            : (isDark ? "asset:///images/ic_contact.png" : "asset:///images/ic_contact_dark.png");
+                        }    
                     }
                 },
                 ListItemComponent {
-                    type: "header" // Harf başlıklarının (A, B, vs.) görünmesi için eklenmeli
+                    type: "header"
                     Header {
                         title: ListItemData
                     }
@@ -198,13 +311,16 @@ Page {
         }
     }
     
-    // ARTIK KÖK SEVİYEDE: Dosyadaki tüm bileşenler ve attachedObjects doğrudan erişebilir
-    function openChatPage(title, id, type) {
+    function openChatPage(title, id, type, avatar, isReadOnly) {
         var chatPage = goChat.createObject();
         chatPage.chatTitle = title;
         chatPage.chatID = id;
         chatPage.chatType = type;
         chatPage.accountID = accountID;
+        chatPage.avatarUrl = avatar;
+        chatPage.readOnly = isReadOnly;
+        chatPage.avatarColor = darkenColor(primaryColor, 90);
+        chatPage.avatarInitial = title ? title.trim().charAt(0).toUpperCase() : "";
         chatPage.mainRef = mainRef;
         chatPage.primaryColor = primaryColor;
         chatPage.chatBgColor = chatBgColor;
@@ -212,7 +328,6 @@ Page {
         chatPage.loadMessages();
         navigationPane.push(chatPage);
         navigationPane.remove(contactsPage);
-
     }
     
     attachedObjects: [
@@ -221,11 +336,8 @@ Page {
             title: "Failed to Start Chat"
             confirmButton.label: "OK"
             cancelButton.label: "" 
-            onFinished: {
-                // User pressed OK
-            }
+            onFinished: {}
         },
-    
         GroupDataModel {
             id: contactModel
             sortingKeys: ["displayName"]
@@ -241,7 +353,9 @@ Page {
                 id: selectionSheet
                 property variant numbersArray: [] 
                 property string contactName: ""
-                signal numberSelected(string name, string phone)
+                property string avatar
+                
+                signal numberSelected(string name, string phone, string avatar)
                 
                 Page {
                     titleBar: TitleBar {
@@ -274,7 +388,7 @@ Page {
                             ]
                             onTriggered: {
                                 var chosenNum = dataModel.data(indexPath);                                
-                                selectionSheet.numberSelected(selectionSheet.contactName, chosenNum);
+                                selectionSheet.numberSelected(selectionSheet.contactName, chosenNum, selectionSheet.avatar);
                                 selectionSheet.close();                                
                             }
                         }
@@ -288,38 +402,89 @@ Page {
         }
     ]
     
-    function refreshContacts(searchQuery, accID) {
+    function initializeContacts(accID) {
         if (!accID || accID === "") return;
         if (!dat) return;
         
         contactModel.clear();
+        hasResults = false;
         var combinedData = [];
         
-        // 1. Grupları çek ve birleştir
-        var groups = dat.getGroupsFromDb(searchQuery, accID);
+        var groups = dat.getGroupsFromDb("", accID);
         if (groups && groups.length > 0) {
             for (var i = 0; i < groups.length; i++) {
                 combinedData.push(groups[i]);
             }
         }
         
-        // 2. Kişileri çek ve birleştir
-        var contacts = dat.getDeviceContacts(searchQuery);
-        if (contacts && contacts.length > 0) {
-            for (var j = 0; j < contacts.length; j++) {
-                combinedData.push(contacts[j]);
-            }
-        }
-        
-        // 3. Tek seferde modele aktar
         if (combinedData.length > 0) {
             contactModel.insertList(combinedData);
         }
     }
     
+    function refreshContacts(searchQuery, accID) {
+        if (!accID || accID === "") return;
+        if (!dat) return;
+        
+        contactModel.clear();
+        var combinedData = [];
+        var mode = filterControl.selectedIndex; // 0: All, 1: Local, 2: Account
+        
+        // Mode 2 veya Mode 0 (All / Account): getGroupsFromDb ve getContactsFromDb[cite: 1]
+        if (mode === 0 || mode === 2) {
+            var groups = dat.getGroupsFromDb(searchQuery, accID);
+            if (groups && groups.length > 0) {
+                for (var i = 0; i < groups.length; i++) {
+                    combinedData.push(groups[i]);
+                }
+            }
+            
+            var contacts = dat.getContactsFromDb(searchQuery, accID);
+            if (contacts && contacts.length > 0) {
+                for (var j = 0; j < contacts.length; j++) {
+                    combinedData.push(contacts[j]);
+                }
+            }
+        }
+        
+        // Mode 1 veya Mode 0 (All / Local): getDeviceContacts[cite: 1]
+        if (mode === 0 || mode === 1) {
+            var locals = dat.getDeviceContacts(searchQuery);
+            if (locals && locals.length > 0) {
+                for (var k = 0; k < locals.length; k++) {
+                    combinedData.push(locals[k]);
+                }
+            }
+        }
+        
+        if (combinedData.length > 0) {
+            contactModel.insertList(combinedData);
+            hasResults = true;
+            statusCont.visible = false;
+        } else {
+            hasResults = false;
+            statusCont.visible= true;
+        }
+        searchAct.running = false;
+    }
+    
     onCreationCompleted: {
         dat.chatCreatedSuccess.connect(onChatCreatedSuccessHandler);
         dat.chatCreatedError.connect(onChatCreatedErrorHandler);
+        dat.searchContactsFinished.connect(onSearchContactsFinished);
+        dat.searchContactsError.connect(onSearchContactsError);
+        dat.avatarDownloaded.connect(onAvatarDownloaded);
         darkTheme = app.darkMode;
+    }
+    
+    function cleanup() {
+        console.log("Contacts page cleaning up connections...");
+        try {
+            dat.chatCreatedSuccess.disconnect(onChatCreatedSuccessHandler);
+            dat.chatCreatedError.disconnect(onChatCreatedErrorHandler);
+            dat.searchContactsFinished.disconnect(onSearchContactsFinished);
+            dat.searchContactsError.disconnect(onSearchContactsError);
+            dat.avatarDownloaded.disconnect(onAvatarDownloaded);
+        } catch (e) {}
     }
 }

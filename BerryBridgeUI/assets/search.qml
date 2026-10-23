@@ -9,32 +9,20 @@ Page {
         layout: StackLayout { orientation: LayoutOrientation.TopToBottom }
         topPadding: ui.du(2.0); bottomPadding: ui.du(2.0)
         leftPadding: ui.du(2.0); rightPadding: ui.du(2.0)
-        
-        // Arama Barı
-        Container {
-            horizontalAlignment: HorizontalAlignment.Fill
-            bottomPadding: ui.du(1.5)
-            layout: StackLayout { orientation: LayoutOrientation.LeftToRight }
             
-            TextField {
-                id: searchField
-                hintText: "Search in text messages..."
-                verticalAlignment: VerticalAlignment.Center
-                layoutProperties: StackLayoutProperties { spaceQuota: 1.0 }
-            }
+         TextField {
+             id: searchField
+             hintText: "Search in text messages"
+             verticalAlignment: VerticalAlignment.Center
+             layoutProperties: StackLayoutProperties { spaceQuota: 1.0 }
+             input.submitKey: SubmitKey.Search
+             input.onSubmitted: {
+                 searchModel.clear();
+                 var results = dat.searchMessages(accountID, searchField.text);
+                 searchModel.append(results);              
+             }
+         }
             
-            Button {
-                text: "Go"
-                verticalAlignment: VerticalAlignment.Center
-                leftMargin: ui.du(1.5)
-                preferredWidth: ui.du(12.0)
-                onClicked: {
-                    searchModel.clear();
-                    var results = dat.searchMessages(accountID, searchField.text);
-                    searchModel.append(results);
-                }
-            }
-        }
         
         // Arama Sonuçları Listesi
         ListView {
@@ -89,15 +77,13 @@ Page {
                                 }
                                 Label {
                                     text: ListItemData.timestamp
-                                    textStyle.fontSize: FontSize.XSmall
-                                    textStyle.color: Color.Gray
+                                    textStyle.fontSize: FontSize.XSmall                                  
                                     verticalAlignment: VerticalAlignment.Center
                                 }
                             }
                             
                             Label {
                                 text: ListItemData.snippet
-                                textStyle.color: Color.DarkGray
                                 textStyle.fontSize: FontSize.Small
                                 textStyle.fontWeight: FontWeight.W200
                                 multiline: true

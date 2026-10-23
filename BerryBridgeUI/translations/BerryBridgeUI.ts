@@ -4,12 +4,12 @@
 <context>
     <name>Database</name>
     <message>
-        <location filename="../src/Database.cpp" line="1409"/>
+        <location filename="../src/Database.cpp" line="1411"/>
         <source>Today</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/Database.cpp" line="1411"/>
+        <location filename="../src/Database.cpp" line="1413"/>
         <source>Yesterday</source>
         <translation type="unfinished"></translation>
     </message>
