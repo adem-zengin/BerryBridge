@@ -197,15 +197,11 @@ sudo systemctl restart nginx
 2. Connect to your server's **Public IP Address**.
 3. Log in with Username: `ubuntu` and the password set earlier.
 4. Open **Firefox** inside the remote desktop session.
-5. Download Beeper Desktop v4.3.113:
-   ```text
-   https://beeper-desktop.download.beeper.com/builds/Beeper-4.3.113-arm64.AppImage
-   ```
-   > **Note:** Version `4.3.113` is currently the latest verified working version for headless/server setups.
-
+5. Download Beeper Desktop:
+   [https://api.beeper.com/desktop/download/linux/arm64/stable/com.automattic.beeper.desktop](https://api.beeper.com/desktop/download/linux/arm64/stable/com.automattic.beeper.desktop)
 6. Open the **Downloads** folder, right-click the `.AppImage` file > **Properties** > **Permissions** > Check **Allow this file to run as a program**.
 7. Double-click the file to launch **Beeper Desktop**.
-8. Sign in, link your messaging accounts, and enable **Remote Access** under **Settings > Integrations > Advanced**.
+8. Sign in, link your messaging accounts.
 9. Generate your **Access Token** under **Settings > Integrations > Approved Connections** (Set *Expires In* to **NEVER** and *Allow sensitive actions* to **YES**). Save this token securely.
 
 ### 7. Connect Berry Bridge on BlackBerry 10
