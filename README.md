@@ -209,9 +209,3 @@ sudo systemctl restart nginx
 2. Enter your domain name as the **Server URL** (e.g., `https://YOUR_DOMAIN.duckdns.org`).
 3. Paste your generated **Access Token**.
 4. Tap **List Accounts** and enjoy global access!
-
-## 💖 Support
-
-If you find this project useful, you can support its development on Patreon:
-
-[Patreon](https://www.patreon.com/16129770/join)
